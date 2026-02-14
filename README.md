@@ -53,6 +53,21 @@ Pré-requisitos:
 - Conta Sepolia com ETH e LINK de teste (https://faucets.chain.link/sepolia)
 - RPC Sepolia (Alchemy / Infura) — configurar `SEPOLIA_RPC`
 
+### Instalando Foundry no Windows
+
+Opção 1 - Via Rust (recomendado):
+```bash
+# Instale Rust primeiro
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs/ | sh
+
+# Instale Foundry
+cargo install --git https://github.com/foundry-rs/foundry foundry-cli anvil --bins --locked
+```
+
+Opção 2 - Binários pré-compilados:
+- Baixe os binários em https://github.com/foundry-rs/foundry/releases
+- Adicione ao PATH do Windows
+
 Passos mínimos:
 
 1. Clone o repositório
