@@ -1,0 +1,34 @@
+{
+  "name": "clim-protocol",
+  "version": "1.0.0",
+  "description": "Tokenização de Risco Climático Local usando Oráculos Descentralizados",
+  "main": "index.js",
+  "scripts": {
+    "install-foundry": "curl -L https://foundry.paradigm.xyz | bash && foundryup",
+    "build-contracts": "cd contracts && forge build",
+    "test-contracts": "cd contracts && forge test -vvv",
+    "deploy-sepolia": "cd contracts && forge script script/Deploy.s.sol:Deploy --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast --verify",
+    "dev-frontend": "cd frontend && npm run dev",
+    "build-frontend": "cd frontend && npm run build"
+  },
+  "keywords": [
+    "defi",
+    "chainlink",
+    "climate",
+    "agriculture",
+    "insurance",
+    "tokenization"
+  ],
+  "author": "Clim Protocol Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/clim-protocol"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
