@@ -140,6 +140,13 @@ Exemplo de fluxo:
 
 ## Links úteis
 
+- **Documentação Técnica**: [ARCHITECTURE.md](ARCHITECTURE.md) - Visão detalhada da arquitetura
+- **Fase 1 - Implementação**: [PHASE1_IMPLEMENTATION.md](PHASE1_IMPLEMENTATION.md) - O que foi feito
+- **Fase 1 - Validação**: [PHASE1_VALIDATION.md](PHASE1_VALIDATION.md) - Checklist completo
+- **Segurança**: [SECURITY_ANALYSIS.md](SECURITY_ANALYSIS.md) - Análise de segurança
+- **Melhorias**: [SECURITY_IMPROVEMENTS.md](SECURITY_IMPROVEMENTS.md) - Changelog de segurança
+- **Testes**: [TEST_COVERAGE.md](TEST_COVERAGE.md) - Guia de testes e coverage
+- **Roadmap**: [TODO_ROADMAP.md](TODO_ROADMAP.md) - Roadmap completo
 - Chainlink Functions: https://docs.chain.link/chainlink-functions/getting-started
 - Chainlink Automation: https://docs.chain.link/chainlink-automation/overview/getting-started
 - Open‑Meteo: https://open-meteo.com/

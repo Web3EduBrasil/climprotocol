@@ -94,8 +94,9 @@ contract ClimateEventToken is ERC1155, AccessControl, ReentrancyGuard, IClimateE
             uint256 payout = userBalance * eventData.payoutPerToken;
             _burn(msg.sender, eventId, userBalance);
             
-            // Transfer payout (this will be called by the settlement engine with proper liquidity)
-            payable(msg.sender).transfer(payout);
+            // Transfer payout using call for better security
+            (bool success, ) = payable(msg.sender).call{value: payout}("");
+            require(success, "Payout transfer failed");
             
             emit TokensRedeemed(eventId, msg.sender, userBalance, payout);
         } else {

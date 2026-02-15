@@ -16,6 +16,9 @@ import "../oracle/ClimateOracle.sol";
 contract SettlementEngine is AutomationCompatibleInterface, AccessControl, ReentrancyGuard {
     bytes32 public constant AUTOMATION_ROLE = keccak256("AUTOMATION_ROLE");
     
+    // Maximum events to process per upkeep to prevent gas limit issues
+    uint256 public constant MAX_EVENTS_PER_UPKEEP = 10;
+    
     ClimateEventToken public immutable climateToken;
     LiquidityPool public immutable liquidityPool;
     ClimateOracle public immutable oracle;
@@ -68,15 +71,27 @@ contract SettlementEngine is AutomationCompatibleInterface, AccessControl, Reent
         override 
         returns (bool upkeepNeeded, bytes memory performData) 
     {
-        uint256[] memory eventsToSettle = new uint256[](activeEvents.length);
+        uint256[] memory eventsToSettle = new uint256[](MAX_EVENTS_PER_UPKEEP);
         uint256 count = 0;
+        uint256 checked = 0;
         
-        for (uint256 i = 0; i < activeEvents.length; i++) {
+        // Limit iteration to prevent gas issues
+        uint256 maxToCheck = activeEvents.length < MAX_EVENTS_PER_UPKEEP 
+            ? activeEvents.length 
+            : MAX_EVENTS_PER_UPKEEP;
+        
+        for (uint256 i = 0; i < activeEvents.length && checked < maxToCheck; i++) {
             uint256 eventId = activeEvents[i];
+            checked++;
             
             if (_shouldSettleEvent(eventId)) {
                 eventsToSettle[count] = eventId;
                 count++;
+                
+                // Stop if we've found enough events
+                if (count >= MAX_EVENTS_PER_UPKEEP) {
+                    break;
+                }
             }
         }
         

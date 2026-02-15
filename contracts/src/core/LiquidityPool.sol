@@ -21,6 +21,9 @@ contract LiquidityPool is ILiquidityPool, AccessControl, ReentrancyGuard {
     // Total liquidity provided
     uint256 public totalLiquidity;
     
+    // Total locked collateral across all events
+    uint256 public totalLockedCollateral;
+    
     // Overcollateralization ratio (150% = 1500)
     uint256 public overcollateralizationRatio = 1500; // 150%
     
@@ -68,8 +71,10 @@ contract LiquidityPool is ILiquidityPool, AccessControl, ReentrancyGuard {
         onlyRole(POOL_MANAGER_ROLE) 
     {
         require(availableLiquidity() >= amount, "Insufficient liquidity");
+        require(lockedCollateral[eventId] == 0, "Collateral already locked for event");
         
         lockedCollateral[eventId] = amount;
+        totalLockedCollateral += amount;
         
         emit CollateralLocked(eventId, amount);
     }
@@ -89,7 +94,8 @@ contract LiquidityPool is ILiquidityPool, AccessControl, ReentrancyGuard {
         require(locked > 0, "No collateral locked for this event");
         require(payoutAmount <= locked, "Payout exceeds locked collateral");
         
-        // Reset locked collateral
+        // Update totals
+        totalLockedCollateral -= locked;
         lockedCollateral[eventId] = 0;
         
         if (payoutAmount > 0) {
@@ -118,10 +124,9 @@ contract LiquidityPool is ILiquidityPool, AccessControl, ReentrancyGuard {
      * @dev Returns available liquidity (total - locked)
      */
     function availableLiquidity() public view override returns (uint256) {
-        uint256 totalLocked = 0;
-        // In a real implementation, we'd iterate through active events
-        // For now, we'll track this separately
-        return totalLiquidity > totalLocked ? totalLiquidity - totalLocked : 0;
+        return totalLiquidity > totalLockedCollateral 
+            ? totalLiquidity - totalLockedCollateral 
+            : 0;
     }
     
     /**

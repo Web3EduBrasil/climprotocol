@@ -28,6 +28,9 @@ contract ClimateOracle is FunctionsClient, AccessControl, IClimateOracle {
     // Response storage
     mapping(uint256 => uint256) public eventPrecipitationData;
     
+    // Maximum valid precipitation value (10 meters = 10,000,000 mm scaled)
+    uint256 public constant MAX_VALID_PRECIPITATION = 10_000_000_000;
+    
     // JavaScript source code for Chainlink Functions
     string public constant SOURCE = 
         "const lat = args[0];"
@@ -143,6 +146,10 @@ contract ClimateOracle is FunctionsClient, AccessControl, IClimateOracle {
         }
         
         uint256 precipitationMm = abi.decode(response, (uint256));
+        
+        // Sanity checks on precipitation data
+        require(precipitationMm < MAX_VALID_PRECIPITATION, "Precipitation value exceeds maximum");
+        
         eventPrecipitationData[eventId] = precipitationMm;
         
         emit RequestFulfilled(requestId, eventId, precipitationMm);
@@ -234,14 +241,19 @@ contract ClimateOracle is FunctionsClient, AccessControl, IClimateOracle {
     
     /**
      * @dev Converts timestamp to YYYY-MM-DD format
+     * NOTE: This is a simplified implementation. For production, use a proper
+     * datetime library like BokkyPooBah's DateTime Library or similar.
+     * Current implementation passes timestamp as-is and relies on off-chain
+     * conversion in the Chainlink Functions JavaScript code.
      */
     function _timestampToDateString(uint256 timestamp) 
         internal 
         pure 
         returns (string memory) 
     {
-        // Simplified implementation - in production, use a proper date library  
-        // For now, assume format is handled by the calling contract
+        // TODO: Implement proper timestamp to date conversion
+        // For MVP, the JavaScript code in Chainlink Functions should handle
+        // the conversion from timestamp to YYYY-MM-DD format
         return _uint256ToString(timestamp);
     }
     
