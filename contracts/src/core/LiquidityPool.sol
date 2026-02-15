@@ -55,7 +55,8 @@ contract LiquidityPool is ILiquidityPool, AccessControl, ReentrancyGuard {
         lpBalances[msg.sender] -= amount;
         totalLiquidity -= amount;
         
-        payable(msg.sender).transfer(amount);
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        require(success, "Withdrawal failed");
         
         emit LiquidityWithdrawn(msg.sender, amount);
     }
@@ -117,7 +118,8 @@ contract LiquidityPool is ILiquidityPool, AccessControl, ReentrancyGuard {
         nonReentrant 
     {
         require(totalLiquidity >= amount, "Insufficient total liquidity");
-        payable(recipient).transfer(amount);
+        (bool success, ) = payable(recipient).call{value: amount}("");
+        require(success, "Payout transfer failed");
     }
     
     /**
@@ -159,7 +161,8 @@ contract LiquidityPool is ILiquidityPool, AccessControl, ReentrancyGuard {
      * @dev Emergency function to recover stuck funds (only admin)
      */
     function emergencyWithdraw() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        payable(msg.sender).transfer(address(this).balance);
+        (bool success, ) = payable(msg.sender).call{value: address(this).balance}("");
+        require(success, "Emergency withdraw failed");
     }
     
     /**
@@ -170,7 +173,12 @@ contract LiquidityPool is ILiquidityPool, AccessControl, ReentrancyGuard {
     }
     
     receive() external payable {
-        // Allow direct ETH deposits
-        deposit();
+        // Allow direct ETH deposits: credit the original sender
+        require(msg.value > 0, "Must deposit positive amount");
+
+        lpBalances[msg.sender] += msg.value;
+        totalLiquidity += msg.value;
+
+        emit LiquidityProvided(msg.sender, msg.value);
     }
 }

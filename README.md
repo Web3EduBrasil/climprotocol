@@ -1,17 +1,37 @@
 # Clim Protocol
 
-Tokenização de Risco Climático Local usando Oráculos Descentralizados (MVP para Hackathon Chainlink Convergence 2026).
+**Parametric Drought Protection for Small Farmers** — Tokenização de Risco Climático usando Oráculos Descentralizados (MVP para Hackathon Chainlink Convergence 2026).
+
+---
+
+## 📚 Documentação Completa
+
+**✨ NOVA ESTRUTURA ORGANIZADA:** Toda documentação foi movida para a pasta [`docs/`](./docs/)
+
+👉 **[ACESSE A DOCUMENTAÇÃO COMPLETA AQUI](./docs/README.md)**
+
+**Destaques:**
+- 🎤 **[PITCH_DECK.md](./docs/PITCH_DECK.md)** - **Apresentação para hackathon** 🏆
+- 📊 **[STATUS.md](./docs/STATUS.md)** - **Visão executiva do projeto**
+- ⭐ **[TEST_REPORT.md](./docs/phase3-testes-validacao/TEST_REPORT.md)** - **66/66 testes passando (100%)**
+- 📋 **[Phase 1: Planejamento](./docs/phase1-planejamento/)** - Arquitetura e design
+- 🔨 **[Phase 2: Implementação](./docs/phase2-implementacao/)** - Desenvolvimento dos contratos
+- ✅ **[Phase 3: Testes](./docs/phase3-testes-validacao/)** - Relatórios e cobertura
+
+---
 
 ## Resumo
 
-O Clim Protocol tokeniza eventos climáticos locais como instrumentos paramétricos on‑chain (Climate Event Tokens — CET). O MVP usa **Chainlink Functions** para consultar dados climáticos (Open-Meteo) e **Chainlink Automation** para executar liquidações automáticas. O objetivo é oferecer hedge acessível para pequenos produtores via tokens ERC-1155.
+O Clim Protocol oferece **proteção paramétrica contra seca** para pequenos agricultores do **Semiárido de Pernambuco**. Tokenizamos eventos de seca como instrumentos on‑chain (Climate Event Tokens — CET) que pagam automaticamente quando a precipitação acumulada fica abaixo de 150mm em 90 dias. O MVP usa **Chainlink Functions** para consultar dados climáticos reais (Open-Meteo) e **Chainlink Automation** para executar liquidações automáticas.
 
-## Objetivos do MVP
-- Cobrir um município (ex.: Recife)
-- Um tipo de evento: **precipitação acumulada** (mm)
-- Emissão de CET (ERC-1155)
-- Liquidação automática com Chainlink Functions + Automation
-- Dashboard mínimo em Next.js
+## 🎯 Foco do MVP
+- **Fenômeno**: Seca (Drought)
+- **Região**: Semiárido de Pernambuco (Nordeste do Brasil)
+- **Métrica**: Precipitação acumulada (mm)
+- **Período**: 90 dias
+- **Trigger**: Precipitação < 150mm
+- **Token**: ERC-1155 (Climate Event Tokens)
+- **Liquidação**: Automática via Chainlink Functions + Automation
 
 ## Arquitetura
 
@@ -36,6 +56,15 @@ Frontend → ClimProtocol (Facade) → Factory / Pool / Settlement
 - Chainlink Automation (Sepolia)
 - Next.js + wagmi + viem (frontend)
 - Open-Meteo (API climática)
+
+## 🌾 Exemplo de Uso (Semiárido de Pernambuco)
+
+1. **LP fornece liquidez**: Investidor deposita 50 ETH no pool
+2. **Admin cria evento**: "Seca no Sertão PE, jan-mar/2026 (90 dias), precipitação < 150mm, payout 0.05 ETH/token"
+3. **Agricultor compra tokens**: Paga premium de ~0.0275 ETH por token (proteção contra seca)
+4. **Período de 90 dias termina**: Chainlink Functions busca dados da Open-Meteo API
+5. **Liquidação automática**: Se precipitação acumulada < 150mm → payout disparado
+6. **Agricultor resgata**: Recebe 0.05 ETH por token diretamente na wallet
 
 ## Estrutura proposta do repositório
 
@@ -138,19 +167,28 @@ Exemplo de fluxo:
 2. Fork → branch com PR
 3. Adicione testes para qualquer mudança de lógica
 
-## Links úteis
+## 📚 Links Úteis
 
-- **Documentação Técnica**: [ARCHITECTURE.md](ARCHITECTURE.md) - Visão detalhada da arquitetura
-- **Fase 1 - Implementação**: [PHASE1_IMPLEMENTATION.md](PHASE1_IMPLEMENTATION.md) - O que foi feito
-- **Fase 1 - Validação**: [PHASE1_VALIDATION.md](PHASE1_VALIDATION.md) - Checklist completo
-- **Segurança**: [SECURITY_ANALYSIS.md](SECURITY_ANALYSIS.md) - Análise de segurança
-- **Melhorias**: [SECURITY_IMPROVEMENTS.md](SECURITY_IMPROVEMENTS.md) - Changelog de segurança
-- **Testes**: [TEST_COVERAGE.md](TEST_COVERAGE.md) - Guia de testes e coverage
-- **Roadmap**: [TODO_ROADMAP.md](TODO_ROADMAP.md) - Roadmap completo
-- Chainlink Functions: https://docs.chain.link/chainlink-functions/getting-started
-- Chainlink Automation: https://docs.chain.link/chainlink-automation/overview/getting-started
-- Open‑Meteo: https://open-meteo.com/
+### 🚀 Para Começar Rapidamente
+- **[Documentação Completa](./docs/README.md)** - Hub central de toda documentação
+- **[Como Testar](./docs/phase3-testes-validacao/HOW_TO_TEST.md)** - Guia prático de testes
+- **[Relatório de Testes](./docs/phase3-testes-validacao/TEST_REPORT.md)** - 66/66 testes ✅
+- **[Correções Aplicadas](./docs/phase3-testes-validacao/CORRECTIONS_APPLIED.md)** - Últimas atualizações
+
+### 📋 Documentação por Fase
+- **[Phase 1: Planejamento](./docs/phase1-planejamento/)** - Arquitetura e design do sistema
+- **[Phase 2: Implementação](./docs/phase2-implementacao/)** - Desenvolvimento dos contratos
+- **[Phase 3: Testes](./docs/phase3-testes-validacao/)** - Validação completa do protocolo
+
+### 🔗 Recursos Externos
+- **Chainlink Functions:** https://docs.chain.link/chainlink-functions/getting-started
+- **Chainlink Automation:** https://docs.chain.link/chainlink-automation/overview/getting-started
+- **Open-Meteo API:** https://open-meteo.com/
+- **Foundry Book:** https://book.getfoundry.sh/
+- **OpenZeppelin Docs:** https://docs.openzeppelin.com/
 
 ---
 
-Licença: MIT
+**Licença:** MIT  
+**Hackathon:** Chainlink Convergence 2026  
+**Status:** ✅ MVP Completo - Pronto para Testnet

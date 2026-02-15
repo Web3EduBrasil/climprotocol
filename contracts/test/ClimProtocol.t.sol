@@ -58,6 +58,8 @@ contract ClimProtocolTest is Test {
         liquidityPool.grantRole(liquidityPool.POOL_MANAGER_ROLE(), address(settlementEngine));
         oracle.grantRole(oracle.ORACLE_REQUESTER_ROLE(), address(settlementEngine));
         factory.grantRole(factory.EVENT_CREATOR_ROLE(), owner);
+        // Allow factory to register events with the settlement engine
+        settlementEngine.grantRole(settlementEngine.AUTOMATION_ROLE(), address(factory));
         
         vm.stopPrank();
         
@@ -67,7 +69,7 @@ contract ClimProtocolTest is Test {
         vm.deal(tokenBuyer, 10 ether);
     }
     
-    function testInitialSetup() public {
+    function testInitialSetup() public view {
         // Test that all contracts are deployed and connected
         assertEq(address(protocol.climateToken()), address(climateToken));
         assertEq(address(protocol.factory()), address(factory));
@@ -208,7 +210,7 @@ contract ClimProtocolTest is Test {
         assertEq(climateToken.balanceOf(tokenBuyer, eventId), tokenAmount);
     }
     
-    function testContractAddresses() public {
+    function testContractAddresses() public view {
         (
             address tokenContract,
             address factoryContract,

@@ -172,7 +172,7 @@ contract ClimateEventFactory is AccessControl, ReentrancyGuard {
         
         require(msg.value >= totalPremium, "Insufficient payment");
         
-        // Transfer tokens to buyer
+        // Transfer tokens to buyer (direct caller)
         climateToken.safeTransferFrom(
             address(this),
             msg.sender,
@@ -186,7 +186,55 @@ contract ClimateEventFactory is AccessControl, ReentrancyGuard {
         
         // Refund excess payment
         if (msg.value > totalPremium) {
-            payable(msg.sender).transfer(msg.value - totalPremium);
+            (bool success, ) = payable(msg.sender).call{value: msg.value - totalPremium}("");
+            require(success, "Refund failed");
+        }
+    }
+
+    /**
+     * @dev Allows a third-party contract (e.g., protocol facade) to purchase tokens
+     * on behalf of a buyer. `buyer` receives the tokens and any refund.
+     */
+    function buyClimateTokensFor(uint256 eventId, uint256 tokenAmount, address buyer)
+        external
+        payable
+        nonReentrant
+    {
+        require(tokenAmount > 0, "Must buy at least one token");
+
+        IClimateEvent.ClimateEventData memory eventData = climateToken.getEventData(eventId);
+        require(eventData.status == IClimateEvent.EventStatus.ACTIVE, "Event not active");
+        require(block.timestamp < eventData.startTime, "Event already started");
+
+        // Check token availability
+        uint256 availableTokens = climateToken.balanceOf(address(this), eventId);
+        require(tokenAmount <= availableTokens, "Insufficient tokens available");
+
+        // Calculate premium
+        uint256 premiumPerToken = calculatePremium(
+            eventData.payoutPerToken,
+            eventData.endTime - eventData.startTime
+        );
+        uint256 totalPremium = tokenAmount * premiumPerToken;
+
+        require(msg.value >= totalPremium, "Insufficient payment");
+
+        // Transfer tokens to buyer
+        climateToken.safeTransferFrom(
+            address(this),
+            buyer,
+            eventId,
+            tokenAmount,
+            ""
+        );
+
+        // Send premium to liquidity pool
+        liquidityPool.deposit{value: totalPremium}();
+
+        // Refund excess payment to buyer
+        if (msg.value > totalPremium) {
+            (bool success, ) = payable(buyer).call{value: msg.value - totalPremium}("");
+            require(success, "Refund failed");
         }
     }
     

@@ -95,7 +95,7 @@ contract ClimProtocol is AccessControl {
         external 
         payable 
     {
-        factory.buyClimateTokens{value: msg.value}(eventId, tokenAmount);
+        factory.buyClimateTokensFor{value: msg.value}(eventId, tokenAmount, msg.sender);
     }
     
     /**

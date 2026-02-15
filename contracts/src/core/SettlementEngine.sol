@@ -50,12 +50,11 @@ contract SettlementEngine is AutomationCompatibleInterface, AccessControl, Reent
     /**
      * @dev Adds an event to the active events list for monitoring
      */
-    function addEventForSettlement(uint256 eventId) 
-        external 
-        onlyRole(AUTOMATION_ROLE) 
-    {
+    function addEventForSettlement(uint256 eventId) external {
+        require(hasRole(AUTOMATION_ROLE, msg.sender), "CallerMissingAutomationRole");
+
         require(eventIndexInArray[eventId] == 0, "Event already tracked");
-        
+
         activeEvents.push(eventId);
         eventIndexInArray[eventId] = activeEvents.length;
     }

@@ -147,7 +147,7 @@ contract LiquidityPoolTest is Test {
         vm.stopPrank();
     }
     
-    function testCalculateRequiredCollateral() public {
+    function testCalculateRequiredCollateral() public view {
         uint256 payoutAmount = 10 ether;
         uint256 required = pool.calculateRequiredCollateral(payoutAmount);
         
@@ -228,8 +228,10 @@ contract LiquidityPoolTest is Test {
         
         uint256 adminBalanceBefore = admin.balance;
         
-        vm.prank(admin);
+        vm.startPrank(admin);
+        // emergencyWithdraw should transfer contract balance to admin
         pool.emergencyWithdraw();
+        vm.stopPrank();
         
         assertGt(admin.balance, adminBalanceBefore);
     }

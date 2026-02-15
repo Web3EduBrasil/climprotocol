@@ -44,6 +44,8 @@ contract ClimateEventFactoryTest is Test {
         pool.grantRole(pool.POOL_MANAGER_ROLE(), address(settlement));
         factory.grantRole(factory.EVENT_CREATOR_ROLE(), admin);
         settlement.grantRole(settlement.AUTOMATION_ROLE(), admin);
+        // Allow factory to add events to settlement engine
+        settlement.grantRole(settlement.AUTOMATION_ROLE(), address(factory));
         
         vm.stopPrank();
         
@@ -54,105 +56,105 @@ contract ClimateEventFactoryTest is Test {
     function testCreateClimateEvent() public {
         // Provide liquidity first
         vm.prank(lp);
-        pool.deposit{value: 10 ether}();
+        pool.deposit{value: 100 ether}();
         
         vm.prank(admin);
         uint256 eventId = factory.createClimateEvent(
-            -8_050_000, // Recife latitude
-            -34_881_000, // Recife longitude
+            -8_285_000, // Sertão de Pernambuco latitude
+            -37_975_000, // Sertão de Pernambuco longitude
             block.timestamp + 1 hours + 1,
-            block.timestamp + 31 days,
-            30_000, // 30mm threshold
-            0.01 ether, // payout per token
-            100 // tokens to create
+            block.timestamp + 90 days,  // 90 dias
+            150_000, // 150mm threshold (seca)
+            0.05 ether, // payout per token
+            1000 // tokens to create
         );
         
         assertTrue(eventId > 0);
-        assertEq(factory.getAvailableTokens(eventId), 100);
+        assertEq(factory.getAvailableTokens(eventId), 1000);
     }
     
     function testCannotCreateEventWithPastStartTime() public {
         vm.prank(lp);
-        pool.deposit{value: 10 ether}();
+        pool.deposit{value: 100 ether}();
         
         vm.prank(admin);
         vm.expectRevert("Start time must be at least 1 hour in future");
         factory.createClimateEvent(
-            -8_050_000,
-            -34_881_000,
+            -8_285_000,
+            -37_975_000,
             block.timestamp,
-            block.timestamp + 31 days,
-            30_000,
-            0.01 ether,
-            100
+            block.timestamp + 90 days,
+            150_000,
+            0.05 ether,
+            1000
         );
     }
     
     function testCannotCreateEventWithInvalidDuration() public {
         vm.prank(lp);
-        pool.deposit{value: 10 ether}();
+        pool.deposit{value: 100 ether}();
         
         vm.prank(admin);
         vm.expectRevert("Event duration too short");
         factory.createClimateEvent(
-            -8_050_000,
-            -34_881_000,
+            -8_285_000,
+            -37_975_000,
             block.timestamp + 1 hours + 1,
             block.timestamp + 2 hours,
-            30_000,
-            0.01 ether,
-            100
+            150_000,
+            0.05 ether,
+            1000
         );
     }
     
     function testCannotCreateEventWithLowPayout() public {
         vm.prank(lp);
-        pool.deposit{value: 10 ether}();
+        pool.deposit{value: 100 ether}();
         
         vm.prank(admin);
         vm.expectRevert("Payout per token too low");
         factory.createClimateEvent(
-            -8_050_000,
-            -34_881_000,
+            -8_285_000,
+            -37_975_000,
             block.timestamp + 1 hours + 1,
-            block.timestamp + 31 days,
-            30_000,
+            block.timestamp + 90 days,
+            150_000,
             0.0001 ether,
-            100
+            1000
         );
     }
     
     function testCannotCreateEventWithInvalidLatitude() public {
         vm.prank(lp);
-        pool.deposit{value: 10 ether}();
+        pool.deposit{value: 100 ether}();
         
         vm.prank(admin);
         vm.expectRevert("Invalid latitude");
         factory.createClimateEvent(
             100_000_000, // Invalid
-            -34_881_000,
+            -37_975_000,
             block.timestamp + 1 hours + 1,
-            block.timestamp + 31 days,
-            30_000,
-            0.01 ether,
-            100
+            block.timestamp + 90 days,
+            150_000,
+            0.05 ether,
+            1000
         );
     }
     
     function testCannotCreateEventWithInvalidLongitude() public {
         vm.prank(lp);
-        pool.deposit{value: 10 ether}();
+        pool.deposit{value: 100 ether}();
         
         vm.prank(admin);
         vm.expectRevert("Invalid longitude");
         factory.createClimateEvent(
-            -8_050_000,
+            -8_285_000,
             200_000_000, // Invalid
             block.timestamp + 1 hours + 1,
-            block.timestamp + 31 days,
-            30_000,
-            0.01 ether,
-            100
+            block.timestamp + 90 days,
+            150_000,
+            0.05 ether,
+            1000
         );
     }
     
@@ -160,29 +162,29 @@ contract ClimateEventFactoryTest is Test {
         vm.prank(admin);
         vm.expectRevert("Insufficient liquidity");
         factory.createClimateEvent(
-            -8_050_000,
-            -34_881_000,
+            -8_285_000,
+            -37_975_000,
             block.timestamp + 1 hours + 1,
-            block.timestamp + 31 days,
-            30_000,
-            0.01 ether,
-            100
+            block.timestamp + 90 days,
+            150_000,
+            0.05 ether,
+            1000
         );
     }
     
     function testBuyClimateTokens() public {
         vm.prank(lp);
-        pool.deposit{value: 10 ether}();
+        pool.deposit{value: 100 ether}();
         
         vm.prank(admin);
         uint256 eventId = factory.createClimateEvent(
-            -8_050_000,
-            -34_881_000,
+            -8_285_000,
+            -37_975_000,
             block.timestamp + 1 hours + 1,
-            block.timestamp + 31 days,
-            30_000,
-            0.01 ether,
-            100
+            block.timestamp + 90 days,
+            150_000,
+            0.05 ether,
+            1000
         );
         
         uint256 premium = factory.getEventPremium(eventId);
@@ -192,22 +194,22 @@ contract ClimateEventFactoryTest is Test {
         factory.buyClimateTokens{value: premium * tokensToBuy}(eventId, tokensToBuy);
         
         assertEq(token.balanceOf(buyer, eventId), tokensToBuy);
-        assertEq(factory.getAvailableTokens(eventId), 90);
+        assertEq(factory.getAvailableTokens(eventId), 990);
     }
     
     function testCannotBuyZeroTokens() public {
         vm.prank(lp);
-        pool.deposit{value: 10 ether}();
+        pool.deposit{value: 100 ether}();
         
         vm.prank(admin);
         uint256 eventId = factory.createClimateEvent(
-            -8_050_000,
-            -34_881_000,
+            -8_285_000,
+            -37_975_000,
             block.timestamp + 1 hours + 1,
-            block.timestamp + 31 days,
-            30_000,
-            0.01 ether,
-            100
+            block.timestamp + 90 days,
+            150_000,
+            0.05 ether,
+            1000
         );
         
         vm.prank(buyer);
@@ -217,39 +219,42 @@ contract ClimateEventFactoryTest is Test {
     
     function testCannotBuyMoreThanAvailable() public {
         vm.prank(lp);
-        pool.deposit{value: 10 ether}();
+        pool.deposit{value: 100 ether}();
         
         vm.prank(admin);
         uint256 eventId = factory.createClimateEvent(
-            -8_050_000,
-            -34_881_000,
+            -8_285_000,
+            -37_975_000,
             block.timestamp + 1 hours + 1,
-            block.timestamp + 31 days,
-            30_000,
-            0.01 ether,
-            100
+            block.timestamp + 90 days,
+            150_000,
+            0.05 ether,
+            1000
         );
         
         uint256 premium = factory.getEventPremium(eventId);
         
+        // Ensure buyer has enough ETH to send the large payment, otherwise the call
+        // will fail at the EVM level with OutOfFunds before the contract can revert.
+        vm.deal(buyer, premium * 1500);
         vm.prank(buyer);
         vm.expectRevert("Insufficient tokens available");
-        factory.buyClimateTokens{value: premium * 150}(eventId, 150);
+        factory.buyClimateTokens{value: premium * 1500}(eventId, 1500);
     }
     
     function testCannotBuyWithInsufficientPayment() public {
         vm.prank(lp);
-        pool.deposit{value: 10 ether}();
+        pool.deposit{value: 100 ether}();
         
         vm.prank(admin);
         uint256 eventId = factory.createClimateEvent(
-            -8_050_000,
-            -34_881_000,
+            -8_285_000,
+            -37_975_000,
             block.timestamp + 1 hours + 1,
-            block.timestamp + 31 days,
-            30_000,
-            0.01 ether,
-            100
+            block.timestamp + 90 days,
+            150_000,
+            0.05 ether,
+            1000
         );
         
         vm.prank(buyer);
@@ -259,17 +264,17 @@ contract ClimateEventFactoryTest is Test {
     
     function testCannotBuyAfterEventStarts() public {
         vm.prank(lp);
-        pool.deposit{value: 10 ether}();
+        pool.deposit{value: 100 ether}();
         
         vm.prank(admin);
         uint256 eventId = factory.createClimateEvent(
-            -8_050_000,
-            -34_881_000,
+            -8_285_000,
+            -37_975_000,
             block.timestamp + 1 hours + 1,
-            block.timestamp + 31 days,
-            30_000,
-            0.01 ether,
-            100
+            block.timestamp + 90 days,
+            150_000,
+            0.05 ether,
+            1000
         );
         
         // Warp past start time
@@ -284,17 +289,17 @@ contract ClimateEventFactoryTest is Test {
     
     function testRefundExcessPayment() public {
         vm.prank(lp);
-        pool.deposit{value: 10 ether}();
+        pool.deposit{value: 100 ether}();
         
         vm.prank(admin);
         uint256 eventId = factory.createClimateEvent(
-            -8_050_000,
-            -34_881_000,
+            -8_285_000,
+            -37_975_000,
             block.timestamp + 1 hours + 1,
-            block.timestamp + 31 days,
-            30_000,
-            0.01 ether,
-            100
+            block.timestamp + 90 days,
+            150_000,
+            0.05 ether,
+            1000
         );
         
         uint256 premium = factory.getEventPremium(eventId);
@@ -308,7 +313,7 @@ contract ClimateEventFactoryTest is Test {
         assertGt(buyer.balance, buyerBalanceBefore - (premium * 10) - 0.01 ether);
     }
     
-    function testCalculatePremium() public {
+    function testCalculatePremium() public view {
         uint256 payoutPerToken = 0.01 ether;
         uint256 duration = 30 days;
         
@@ -337,7 +342,7 @@ contract ClimateEventFactoryTest is Test {
         factory.updatePremiumParameters(100, 300);
     }
     
-    function testOnERC1155Received() public {
+    function testOnERC1155Received() public view {
         bytes4 response = factory.onERC1155Received(
             address(this),
             address(this),

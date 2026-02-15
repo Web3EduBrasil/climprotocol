@@ -31,7 +31,7 @@ contract ClimateEventTokenTest is Test {
         vm.deal(user2, 10 ether);
     }
     
-    function testInitialRoles() public {
+    function testInitialRoles() public view {
         assertTrue(token.hasRole(token.DEFAULT_ADMIN_ROLE(), admin));
         assertTrue(token.hasRole(token.MINTER_ROLE(), minter));
         assertTrue(token.hasRole(token.SETTLER_ROLE(), settler));
@@ -84,7 +84,7 @@ contract ClimateEventTokenTest is Test {
         IClimateEvent.ClimateEventData memory eventData = IClimateEvent.ClimateEventData({
             latitude: -8_050_000,
             longitude: -34_881_000,
-            startTime: block.timestamp - 1 days,
+            startTime: 0,
             endTime: block.timestamp + 31 days,
             thresholdMm: 30_000,
             payoutPerToken: 0.01 ether,
@@ -267,7 +267,7 @@ contract ClimateEventTokenTest is Test {
         assertFalse(token.isEventTriggered(EVENT_ID));
     }
     
-    function testSupportsInterface() public {
+    function testSupportsInterface() public view {
         // ERC1155
         assertTrue(token.supportsInterface(0xd9b67a26));
         // AccessControl
