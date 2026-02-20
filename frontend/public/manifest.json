@@ -1,0 +1,23 @@
+{
+  "name": "Clim Protocol",
+  "short_name": "ClimProtocol",
+  "description": "Seguro paramétrico descentralizado contra seca para agricultores do Semiárido brasileiro",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060d14",
+  "theme_color": "#2DD4BF",
+  "orientation": "portrait-primary",
+  "categories": [
+    "finance",
+    "agriculture"
+  ],
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
