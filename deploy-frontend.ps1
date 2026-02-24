@@ -22,9 +22,9 @@ Write-Host "[1/3] Building frontend locally..." -ForegroundColor Yellow
 Push-Location frontend
 
 if (-not (Test-Path "node_modules")) {
-    Write-Host "  Installing dependencies..." -ForegroundColor DarkGray
-    npm ci
-    if ($LASTEXITCODE -ne 0) { Pop-Location; throw "npm ci failed" }
+  Write-Host "  Installing dependencies..." -ForegroundColor DarkGray
+  npm ci
+  if ($LASTEXITCODE -ne 0) { Pop-Location; throw "npm ci failed" }
 }
 
 $env:NODE_ENV = "production"
@@ -39,20 +39,21 @@ Write-Host ""
 Write-Host "[2/3] Checking git status..." -ForegroundColor Yellow
 $status = git status --porcelain
 if ($status) {
-    Write-Host "  Uncommitted changes detected:" -ForegroundColor DarkYellow
-    git status --short
-    Write-Host ""
-    $confirm = Read-Host "  Commit all changes and deploy? (y/N)"
-    if ($confirm -ne "y" -and $confirm -ne "Y") {
-        Write-Host "  Aborted." -ForegroundColor Red
-        exit 1
-    }
-    git add -A
-    $msg = Read-Host "  Commit message (default: 'deploy: update frontend')"
-    if (-not $msg) { $msg = "deploy: update frontend" }
-    git commit -m $msg
-} else {
-    Write-Host "  Working tree clean." -ForegroundColor Green
+  Write-Host "  Uncommitted changes detected:" -ForegroundColor DarkYellow
+  git status --short
+  Write-Host ""
+  $confirm = Read-Host "  Commit all changes and deploy? (y/N)"
+  if ($confirm -ne "y" -and $confirm -ne "Y") {
+    Write-Host "  Aborted." -ForegroundColor Red
+    exit 1
+  }
+  git add -A
+  $msg = Read-Host "  Commit message (default: 'deploy: update frontend')"
+  if (-not $msg) { $msg = "deploy: update frontend" }
+  git commit -m $msg
+}
+else {
+  Write-Host "  Working tree clean." -ForegroundColor Green
 }
 
 # 3. Push to main
