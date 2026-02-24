@@ -1,0 +1,16 @@
+# ==========================================================================
+# CRE PROJECT SETTINGS — Clim Protocol
+# ==========================================================================
+# Project-specific settings for CRE CLI.
+# See: https://docs.chain.link/cre/getting-started/part-1-project-setup
+# ==========================================================================
+
+staging-settings:
+  rpcs:
+    - chain-name: ethereum-testnet-sepolia
+      url: https://ethereum-sepolia-rpc.publicnode.com
+
+production-settings:
+  rpcs:
+    - chain-name: ethereum-testnet-sepolia
+      url: https://ethereum-sepolia-rpc.publicnode.com

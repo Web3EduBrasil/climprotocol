@@ -1,0 +1,14 @@
+{
+  "schedule": "0 */5 * * * *",
+  "openMeteoBaseUrl": "https://archive-api.open-meteo.com/v1/archive",
+  "evms": [
+    {
+      "protocolAddress": "0x901936D63109b8838591211a16856Eb2C197C1e4",
+      "settlementAddress": "0x3d4219054030A09c879A65F2861f18E0Fe3768D2",
+      "oracleAddress": "0xF137c61543a2656ED66e58418CE3c27d829617a8",
+      "factoryAddress": "0x774FCe394C8287818038A62763263DB4736A92Cb",
+      "chainSelectorName": "ethereum-testnet-sepolia",
+      "gasLimit": "500000"
+    }
+  ]
+}

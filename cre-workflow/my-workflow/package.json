@@ -1,0 +1,19 @@
+{
+  "name": "clim-protocol-cre-workflow",
+  "version": "1.0.0",
+  "description": "CRE Workflow for Clim Protocol — Automated climate event monitoring, precipitation data fetching, and settlement orchestration on Ethereum Sepolia.",
+  "main": "dist/main.js",
+  "private": true,
+  "scripts": {
+    "postinstall": "bunx cre-setup"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@chainlink/cre-sdk": "^1.0.9",
+    "viem": "2.34.0",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/bun": "1.2.21"
+  }
+}

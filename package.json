@@ -8,8 +8,12 @@
     "build-contracts": "cd contracts && forge build",
     "test-contracts": "cd contracts && forge test -vvv",
     "deploy-sepolia": "cd contracts && forge script script/Deploy.s.sol:Deploy --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast --verify",
-    "dev-frontend": "cd frontend && npm run dev",
-    "build-frontend": "cd frontend && npm run build"
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "deploy:frontend": "pwsh -File deploy-frontend.ps1",
+    "deploy:cre": "pwsh -File deploy-cre.ps1",
+    "deploy:cre:dry": "pwsh -File deploy-cre.ps1 -DryRun",
+    "deploy:all": "pwsh -File deploy-frontend.ps1 && pwsh -File deploy-cre.ps1"
   },
   "keywords": [
     "defi",
