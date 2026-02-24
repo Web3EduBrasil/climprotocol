@@ -21,6 +21,7 @@ import {
   HiOutlineCurrencyDollar, HiOutlineScale, HiArrowLongRight,
   HiOutlineChevronUp,
 } from 'react-icons/hi2';
+import { BASE_PATH } from '@/config/basePath';
 
 const PrecipitationChart = dynamic(
   () => import('@/components/features/PrecipitationChart').then(m => ({ default: m.PrecipitationChart })),
@@ -145,7 +146,7 @@ export default function DashboardPage() {
           {/* Logo */}
           <div className="mx-auto w-72 h-72 md:w-96 md:h-96 lg:w-md lg:h-112 mb-8 animate-float">
             <Image
-              src="/newLogo.png"
+              src={`${BASE_PATH}/newLogo.png`}
               alt="Clim Protocol"
               width={448}
               height={448}
@@ -355,10 +356,7 @@ export default function DashboardPage() {
               <div className="relative z-10">
                 <HiOutlineBolt className="w-12 h-12 text-(--text-faint) mx-auto mb-4" />
                 <p className="text-base text-(--text-muted) font-medium">No active events at the moment.</p>
-                <p className="text-xs text-(--text-faint) mt-2 max-w-sm mx-auto">Events will appear here when created by an admin on the blockchain. Visit the Admin panel to create one.</p>
-                <Link href="/admin" className="inline-block mt-6 btn-primary text-xs px-5 py-2.5">
-                  Go to Admin Panel <HiArrowLongRight className="inline ml-1 w-4 h-4" />
-                </Link>
+                <p className="text-xs text-(--text-faint) mt-2 max-w-sm mx-auto">Events will appear here when created by an admin on the blockchain.</p>
               </div>
             </div>
           ) : (

@@ -4,6 +4,7 @@ import { Providers } from '@/components/Providers';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ServiceWorkerRegistrar } from '../components/layout/ServiceWorkerRegistrar';
+import { BASE_PATH } from '@/config/basePath';
 import './globals.css';
 
 const inter = Inter({
@@ -19,15 +20,15 @@ export const metadata: Metadata = {
   title: 'Clim Protocol — Parametric Drought Protection',
   description: 'Decentralized parametric climate insurance for smallholder farmers in the Brazilian Semiárido. Built with Chainlink CRE, Functions & Automation.',
   keywords: ['DeFi', 'Chainlink', 'Climate', 'Insurance', 'Agriculture', 'Blockchain', 'Parametric'],
-  manifest: '/manifest.json',
+  manifest: `${BASE_PATH}/manifest.json`,
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: 'Clim Protocol',
   },
   icons: {
-    icon: '/logoIcon.png',
-    apple: '/logoIcon.png',
+    icon: `${BASE_PATH}/logoIcon.png`,
+    apple: `${BASE_PATH}/logoIcon.png`,
   },
   openGraph: {
     type: 'website',
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
     url: siteUrl,
     images: [
       {
-        url: '/newLogo.png',
+        url: `${BASE_PATH}/newLogo.png`,
         width: 512,
         height: 512,
         alt: 'Clim Protocol Logo',
@@ -49,7 +50,7 @@ export const metadata: Metadata = {
     card: 'summary',
     title: 'Clim Protocol — Parametric Drought Protection',
     description: 'Decentralized parametric climate insurance for smallholder farmers in the Brazilian Semiárido.',
-    images: ['/newLogo.png'],
+    images: [`${BASE_PATH}/newLogo.png`],
   },
 };
 

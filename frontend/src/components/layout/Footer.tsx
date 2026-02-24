@@ -4,6 +4,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import Image from 'next/image';
 import { SiChainlink } from 'react-icons/si';
 import { HiOutlineCpuChip, HiOutlineBolt, HiOutlineGlobeAlt, HiOutlineChartBar } from 'react-icons/hi2';
+import { BASE_PATH } from '@/config/basePath';
 
 export function Footer() {
   const { t } = useLanguage();
@@ -50,7 +51,7 @@ export function Footer() {
             <div className="flex items-center gap-2 mb-3">
               <div className="w-10 h-10 relative">
                 <Image
-                  src="/logoIcon.png"
+                  src={`${BASE_PATH}/logoIcon.png`}
                   alt="Clim Protocol"
                   fill
                   className="object-contain"

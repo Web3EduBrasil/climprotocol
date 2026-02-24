@@ -9,6 +9,7 @@ import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useAdminRoles } from '@/hooks/useAdminRoles';
+import { BASE_PATH } from '@/config/basePath';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -31,7 +32,7 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-2 group">
             <div className="w-12 h-12 relative group-hover:scale-110 transition-transform duration-300">
               <Image
-                src="/logoIcon.png"
+                src={`${BASE_PATH}/logoIcon.png`}
                 alt="Clim Protocol"
                 fill
                 className="object-contain"
