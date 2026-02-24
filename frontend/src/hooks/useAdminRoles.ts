@@ -90,13 +90,6 @@ export function useAdminRoles(): AdminRoles {
 
   const isAnyAdmin = isDefaultAdmin || isProtocolAdmin || isEventCreator || isSettlementAdmin;
 
-  // Debug: log to console in dev
-  if (typeof window !== 'undefined' && data && !isLoading) {
-    console.log('[useAdminRoles] address:', address);
-    console.log('[useAdminRoles] multicall results:', data?.map((d, i) => ({ i, status: d?.status, result: d?.result })));
-    console.log('[useAdminRoles] roles:', { isDefaultAdmin, isProtocolAdmin, isEventCreator, isSettlementAdmin, isAnyAdmin });
-  }
-
   return {
     isDefaultAdmin,
     isProtocolAdmin,

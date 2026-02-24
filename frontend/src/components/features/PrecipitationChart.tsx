@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
@@ -65,8 +65,8 @@ export function PrecipitationChart({ threshold = 150, latitude = -7.57, longitud
       <div className={`glass rounded-2xl p-5 ${className}`}>
         <div className="flex items-center justify-center h-[300px]">
           <div className="text-center">
-            <div className="w-6 h-6 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-            <p className="text-xs text-[var(--text-muted)]">Buscando dados climáticos...</p>
+            <div className="w-6 h-6 border-2 border-(--accent) border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            <p className="text-xs text-(--text-muted)">Buscando dados climáticos...</p>
           </div>
         </div>
       </div>
@@ -77,19 +77,19 @@ export function PrecipitationChart({ threshold = 150, latitude = -7.57, longitud
     <div className={`glass rounded-2xl p-5 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-[var(--text-primary)]">{t.chart.title}</h3>
-          <p className="text-xs text-[var(--text-muted)] mt-0.5">{t.chart.subtitle}</p>
+          <h3 className="text-sm font-semibold text-(--text-primary)">{t.chart.title}</h3>
+          <p className="text-xs text-(--text-muted) mt-0.5">{t.chart.subtitle}</p>
         </div>
         <div className="flex items-center gap-4 text-xs">
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-0.5 bg-[var(--accent)] rounded-full"></div>
-            <span className="text-[var(--text-muted)]">{t.chart.accumulated}</span>
+            <div className="w-3 h-0.5 bg-(--accent) rounded-full"></div>
+            <span className="text-(--text-muted)">{t.chart.accumulated}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-0.5 bg-red-400 rounded-full border-dashed"></div>
-            <span className="text-[var(--text-muted)]">Threshold ({threshold} mm)</span>
+            <span className="text-(--text-muted)">Threshold ({threshold} mm)</span>
           </div>
-          <span className="text-[9px] text-[var(--text-faint)] bg-[var(--surface-input)] px-2 py-0.5 rounded">Open-Meteo</span>
+          <span className="text-[9px] text-(--text-faint) bg-(--surface-input) px-2 py-0.5 rounded">Open-Meteo</span>
         </div>
       </div>
 

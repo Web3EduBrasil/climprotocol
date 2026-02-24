@@ -1,7 +1,8 @@
-const CACHE_NAME = 'clim-protocol-v1';
+const CACHE_NAME = 'clim-protocol-v2';
+const BASE = self.location.pathname.replace(/\/sw\.js$/, '');
 const STATIC_ASSETS = [
-  '/',
-  '/manifest.json',
+  BASE + '/',
+  BASE + '/manifest.json',
 ];
 
 self.addEventListener('install', (event) => {

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/i18n/LanguageContext';
@@ -9,7 +9,7 @@ import { StatsCard } from '@/components/ui/StatsCard';
 import { formatEther } from 'viem';
 import { HiOutlineBanknotes, HiOutlineLockClosed, HiOutlineArrowTrendingUp, HiOutlineShieldCheck } from 'react-icons/hi2';
 
-export default function LiquidityPage() {
+export function LiquidityPanel() {
   const { t } = useLanguage();
   const { stats, isLoading: statsLoading } = useProtocolStats();
   const { balance: lpBalance, isConnected } = useLPBalance();
@@ -24,7 +24,6 @@ export default function LiquidityPage() {
   const lockedEth = stats ? Number(formatEther(stats.lockedCollateral)) : 0;
   const userLPBalance = Number(formatEther(lpBalance));
 
-  // Reset forms after success — defer setState to avoid cascading renders
   useEffect(() => {
     if (depositSuccess) {
       const timer = setTimeout(() => {
@@ -60,7 +59,7 @@ export default function LiquidityPage() {
 
   if (statsLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex items-center justify-center min-h-[40vh]">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-(--accent) border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-sm text-(--text-muted)">Loading pool data...</p>
@@ -71,13 +70,9 @@ export default function LiquidityPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <HiOutlineBanknotes className="w-6 h-6 text-(--accent)" />
-          <h1 className="text-2xl font-bold text-(--text-primary)">{t.liquidity.title}</h1>
-        </div>
-        <p className="text-sm text-(--text-muted)">{t.liquidity.subtitle}</p>
-      </div>
+      <h2 className="text-lg font-semibold text-(--text-primary) mb-4 flex items-center gap-2">
+        <HiOutlineBanknotes className="w-5 h-5 text-(--accent)" /> {t.liquidity.title}
+      </h2>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard icon={<HiOutlineBanknotes className="w-5 h-5" />} label={t.stats.totalLiquidity} value={`${totalEth.toFixed(1)} ETH`} trend="up" />

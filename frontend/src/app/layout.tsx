@@ -12,7 +12,10 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+const siteUrl = 'https://web3edubrasil.github.io/climprotocol';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: 'Clim Protocol — Parametric Drought Protection',
   description: 'Decentralized parametric climate insurance for smallholder farmers in the Brazilian Semiárido. Built with Chainlink CRE, Functions & Automation.',
   keywords: ['DeFi', 'Chainlink', 'Climate', 'Insurance', 'Agriculture', 'Blockchain', 'Parametric'],
@@ -23,8 +26,30 @@ export const metadata: Metadata = {
     title: 'Clim Protocol',
   },
   icons: {
-    icon: '/newLogo.png',
-    apple: '/newLogo.png',
+    icon: '/logoIcon.png',
+    apple: '/logoIcon.png',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'Clim Protocol',
+    title: 'Clim Protocol — Parametric Drought Protection',
+    description: 'Decentralized parametric climate insurance for smallholder farmers in the Brazilian Semiárido. Built with Chainlink CRE.',
+    url: siteUrl,
+    images: [
+      {
+        url: '/newLogo.png',
+        width: 512,
+        height: 512,
+        alt: 'Clim Protocol Logo',
+      },
+    ],
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Clim Protocol — Parametric Drought Protection',
+    description: 'Decentralized parametric climate insurance for smallholder farmers in the Brazilian Semiárido.',
+    images: ['/newLogo.png'],
   },
 };
 

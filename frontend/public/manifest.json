@@ -2,7 +2,7 @@
   "name": "Clim Protocol",
   "short_name": "ClimProtocol",
   "description": "Decentralized parametric climate insurance for smallholder farmers in the Brazilian Semiárido",
-  "start_url": "/",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#060d14",
   "theme_color": "#2DD4BF",
@@ -14,7 +14,7 @@
   "lang": "en",
   "icons": [
     {
-      "src": "/newLogo.png",
+      "src": "logoIcon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"

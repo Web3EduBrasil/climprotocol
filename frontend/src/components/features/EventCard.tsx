@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useLanguage } from '@/i18n/LanguageContext';
 import type { ClimateEvent } from '@/services/types';
@@ -29,8 +29,8 @@ export function EventCard({ event, showCTA = true }: EventCardProps) {
     <div className="glass rounded-2xl p-5 card-hover">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-base font-semibold text-[var(--text-primary)]">{event.name}</h3>
-          <p className="text-xs text-[var(--text-muted)] mt-0.5">{event.region}, {event.state}</p>
+          <h3 className="text-base font-semibold text-(--text-primary)">{event.name}</h3>
+          <p className="text-xs text-(--text-muted) mt-0.5">{event.region}, {event.state}</p>
         </div>
         <span className={`flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full ${status.bgColor} ${status.textColor}`}>
           <span className={`w-1.5 h-1.5 rounded-full ${status.color} ${event.status === 'ACTIVE' ? 'pulse-green' : ''}`}></span>
@@ -40,31 +40,31 @@ export function EventCard({ event, showCTA = true }: EventCardProps) {
 
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div>
-          <p className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider">{t.events.period}</p>
-          <p className="text-sm text-[var(--text-secondary)] font-medium">{startDate} — {endDate}</p>
+          <p className="text-[10px] text-(--text-faint) uppercase tracking-wider">{t.events.period}</p>
+          <p className="text-sm text-(--text-secondary) font-medium">{startDate} — {endDate}</p>
         </div>
         <div>
-          <p className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider">{t.events.threshold}</p>
-          <p className="text-sm text-[var(--text-secondary)] font-medium">&lt; {event.thresholdMm} mm</p>
+          <p className="text-[10px] text-(--text-faint) uppercase tracking-wider">{t.events.threshold}</p>
+          <p className="text-sm text-(--text-secondary) font-medium">&lt; {event.thresholdMm} mm</p>
         </div>
         <div>
-          <p className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider">{t.protection.premium}</p>
-          <p className="text-sm text-[var(--accent)] font-semibold">{Number(premiumEth).toFixed(4)} ETH</p>
+          <p className="text-[10px] text-(--text-faint) uppercase tracking-wider">{t.protection.premium}</p>
+          <p className="text-sm text-(--accent) font-semibold">{Number(premiumEth).toFixed(4)} ETH</p>
         </div>
         <div>
-          <p className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider">{t.settlement.payoutPerToken}</p>
-          <p className="text-sm text-[var(--text-secondary)] font-medium">{Number(payoutEth).toFixed(3)} ETH</p>
+          <p className="text-[10px] text-(--text-faint) uppercase tracking-wider">{t.settlement.payoutPerToken}</p>
+          <p className="text-sm text-(--text-secondary) font-medium">{Number(payoutEth).toFixed(3)} ETH</p>
         </div>
       </div>
 
       {event.status === 'ACTIVE' && (
         <div className="mb-4">
           <div className="flex justify-between text-xs mb-1">
-            <span className="text-[var(--text-muted)]">{t.protection.availableTokens}</span>
-            <span className="text-[var(--text-secondary)]">{event.availableTokens} / {event.totalSupply}</span>
+            <span className="text-(--text-muted)">{t.protection.availableTokens}</span>
+            <span className="text-(--text-secondary)">{event.availableTokens} / {event.totalSupply}</span>
           </div>
-          <div className="h-1.5 bg-[var(--surface-input)] rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-[var(--accent)] to-[var(--chainlink)] rounded-full transition-all duration-500" style={{ width: `${(event.availableTokens / event.totalSupply) * 100}%` }}></div>
+          <div className="h-1.5 bg-(--surface-input) rounded-full overflow-hidden">
+            <div className="h-full bg-linear-to-r from-(--accent) to-(--chainlink) rounded-full transition-all duration-500" style={{ width: `${(event.availableTokens / event.totalSupply) * 100}%` }}></div>
           </div>
         </div>
       )}
@@ -72,7 +72,7 @@ export function EventCard({ event, showCTA = true }: EventCardProps) {
       {event.status === 'SETTLED' && event.actualMm !== undefined && (
         <div className={`rounded-xl p-3 mb-4 ${event.payoutTriggered ? 'bg-green-500/5 border border-green-500/20' : 'bg-gray-500/5 border border-gray-500/20'}`}>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-[var(--text-muted)]">{t.settlement.recorded}</span>
+            <span className="text-(--text-muted)">{t.settlement.recorded}</span>
             <span className={`font-semibold ${event.payoutTriggered ? 'text-green-400' : 'text-gray-400'}`}>{event.actualMm} mm</span>
           </div>
           <p className={`text-xs mt-1 font-medium ${event.payoutTriggered ? 'text-green-400' : 'text-gray-400'}`}>

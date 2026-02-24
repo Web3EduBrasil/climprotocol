@@ -18,7 +18,7 @@ type TranslationKeys = typeof en;
 const en = {
   // Nav
   nav: {
-    dashboard: 'Dashboard',
+    dashboard: 'Home',
     protection: 'Protection',
     liquidity: 'Liquidity',
     events: 'Events',
@@ -244,7 +244,7 @@ const en = {
 // ─── SPANISH ─────────────────────────────────
 const es: TranslationKeys = {
   nav: {
-    dashboard: 'Panel',
+    dashboard: 'Inicio',
     protection: 'Protección',
     liquidity: 'Liquidez',
     events: 'Eventos',
@@ -459,7 +459,7 @@ const es: TranslationKeys = {
 // ─── PORTUGUESE ──────────────────────────────
 const pt: TranslationKeys = {
   nav: {
-    dashboard: 'Painel',
+    dashboard: 'In\u00edcio',
     protection: 'Proteção',
     liquidity: 'Liquidez',
     events: 'Eventos',

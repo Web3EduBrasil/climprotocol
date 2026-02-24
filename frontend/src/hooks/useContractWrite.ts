@@ -13,7 +13,10 @@ import { SETTLEMENT_ENGINE_ABI } from '@/constants/abis/SettlementEngine';
  */
 export function useQuickBuy() {
   const { data: hash, writeContract, isPending, error, reset } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+  const { data: receipt, isLoading: isConfirming, isSuccess: isReceived } = useWaitForTransactionReceipt({ hash });
+
+  const isReverted = isReceived && receipt?.status === 'reverted';
+  const isSuccess = isReceived && receipt?.status === 'success';
 
   const buy = (eventId: bigint, quantity: number, premiumPerToken: bigint) => {
     const totalValue = premiumPerToken * BigInt(quantity);
@@ -26,7 +29,7 @@ export function useQuickBuy() {
     });
   };
 
-  return { buy, hash, isPending, isConfirming, isSuccess, error, reset };
+  return { buy, hash, isPending, isConfirming, isSuccess, isReverted, error, reset };
 }
 
 /**
@@ -34,7 +37,10 @@ export function useQuickBuy() {
  */
 export function useProvideLiquidity() {
   const { data: hash, writeContract, isPending, error, reset } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+  const { data: receipt, isLoading: isConfirming, isSuccess: isReceived } = useWaitForTransactionReceipt({ hash });
+
+  const isReverted = isReceived && receipt?.status === 'reverted';
+  const isSuccess = isReceived && receipt?.status === 'success';
 
   const deposit = (amountEth: string) => {
     writeContract({
@@ -45,7 +51,7 @@ export function useProvideLiquidity() {
     });
   };
 
-  return { deposit, hash, isPending, isConfirming, isSuccess, error, reset };
+  return { deposit, hash, isPending, isConfirming, isSuccess, isReverted, error, reset };
 }
 
 /**
@@ -53,7 +59,10 @@ export function useProvideLiquidity() {
  */
 export function useWithdrawLiquidity() {
   const { data: hash, writeContract, isPending, error, reset } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+  const { data: receipt, isLoading: isConfirming, isSuccess: isReceived } = useWaitForTransactionReceipt({ hash });
+
+  const isReverted = isReceived && receipt?.status === 'reverted';
+  const isSuccess = isReceived && receipt?.status === 'success';
 
   const withdraw = (amountEth: string) => {
     writeContract({
@@ -64,7 +73,7 @@ export function useWithdrawLiquidity() {
     });
   };
 
-  return { withdraw, hash, isPending, isConfirming, isSuccess, error, reset };
+  return { withdraw, hash, isPending, isConfirming, isSuccess, isReverted, error, reset };
 }
 
 /**
@@ -72,7 +81,10 @@ export function useWithdrawLiquidity() {
  */
 export function useBatchRedeem() {
   const { data: hash, writeContract, isPending, error, reset } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+  const { data: receipt, isLoading: isConfirming, isSuccess: isReceived } = useWaitForTransactionReceipt({ hash });
+
+  const isReverted = isReceived && receipt?.status === 'reverted';
+  const isSuccess = isReceived && receipt?.status === 'success';
 
   const redeem = (eventIds: bigint[]) => {
     writeContract({
@@ -83,7 +95,7 @@ export function useBatchRedeem() {
     });
   };
 
-  return { redeem, hash, isPending, isConfirming, isSuccess, error, reset };
+  return { redeem, hash, isPending, isConfirming, isSuccess, isReverted, error, reset };
 }
 
 /**
@@ -91,7 +103,11 @@ export function useBatchRedeem() {
  */
 export function useCreateEvent() {
   const { data: hash, writeContract, isPending, error, reset } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+  const { data: receipt, isLoading: isConfirming, isSuccess: isReceived } = useWaitForTransactionReceipt({ hash });
+
+  // A tx can be mined but reverted on-chain
+  const isReverted = isReceived && receipt?.status === 'reverted';
+  const isSuccess = isReceived && receipt?.status === 'success';
 
   const createEvent = (params: {
     latitude: number;
@@ -115,10 +131,11 @@ export function useCreateEvent() {
         parseEther(params.payoutPerToken),
         BigInt(params.tokensToCreate),
       ],
+      gas: BigInt(5_000_000),
     });
   };
 
-  return { createEvent, hash, isPending, isConfirming, isSuccess, error, reset };
+  return { createEvent, hash, isPending, isConfirming, isSuccess, isReverted, error, reset };
 }
 
 /**
@@ -126,7 +143,10 @@ export function useCreateEvent() {
  */
 export function useManualSettlement() {
   const { data: hash, writeContract, isPending, error, reset } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+  const { data: receipt, isLoading: isConfirming, isSuccess: isReceived } = useWaitForTransactionReceipt({ hash });
+
+  const isReverted = isReceived && receipt?.status === 'reverted';
+  const isSuccess = isReceived && receipt?.status === 'success';
 
   const settle = (eventId: bigint) => {
     writeContract({
@@ -137,5 +157,5 @@ export function useManualSettlement() {
     });
   };
 
-  return { settle, hash, isPending, isConfirming, isSuccess, error, reset };
+  return { settle, hash, isPending, isConfirming, isSuccess, isReverted, error, reset };
 }

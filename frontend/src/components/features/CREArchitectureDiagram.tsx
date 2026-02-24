@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { SiChainlink } from 'react-icons/si';
@@ -95,7 +95,7 @@ export function CREArchitectureDiagram() {
   return (
     <div className="glass rounded-2xl relative overflow-hidden">
       {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#2A5ADA]/5 via-transparent to-[var(--accent-glow)] pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-br from-[#2A5ADA]/5 via-transparent to-(--accent-glow) pointer-events-none" />
 
       <div className="relative z-10 p-5 md:p-6">
         {/* Header */}
@@ -105,8 +105,8 @@ export function CREArchitectureDiagram() {
               <SiChainlink className="w-4 h-4 text-[#2A5ADA]" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[var(--text-primary)]">CRE Workflow Architecture</h3>
-              <p className="text-[10px] text-[var(--text-muted)]">Chainlink Compute Runtime Environment — Settlement Pipeline</p>
+              <h3 className="text-sm font-bold text-(--text-primary)">CRE Workflow Architecture</h3>
+              <p className="text-[10px] text-(--text-muted)">Chainlink Compute Runtime Environment — Settlement Pipeline</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -122,12 +122,12 @@ export function CREArchitectureDiagram() {
         {/* Workflow Pipeline — Main visual */}
         <div className="flex items-stretch gap-1.5 md:gap-2 overflow-x-auto pb-3 mb-4 scrollbar-thin">
           {nodes.map((node, i) => (
-            <div key={node.id} className="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
+            <div key={node.id} className="flex items-center gap-1.5 md:gap-2 shrink-0">
               <button
                 onClick={() => setActiveNode(activeNode === node.id ? null : node.id)}
                 className={`group relative rounded-xl px-3 py-3 md:px-4 md:py-3.5 border transition-all duration-300 min-w-[105px] md:min-w-[120px] text-center cursor-pointer ${activeNode === node.id
-                    ? 'border-[var(--accent)] shadow-lg shadow-[var(--accent-glow)] scale-[1.04]'
-                    : 'border-[var(--border)] hover:border-[var(--border-strong)] hover:shadow-md'
+                    ? 'border-(--accent) shadow-lg shadow-(--accent-glow) scale-[1.04]'
+                    : 'border-(--border) hover:border-(--border-strong) hover:shadow-md'
                   }`}
                 style={{
                   background: activeNode === node.id ? node.bgColor : 'var(--surface-input)',
@@ -139,14 +139,14 @@ export function CREArchitectureDiagram() {
                 </span>
                 <div className="flex flex-col items-center gap-1.5">
                   <div style={{ color: node.color }}>{node.icon}</div>
-                  <p className="text-[10px] md:text-xs font-bold text-[var(--text-primary)] leading-tight">{node.label}</p>
-                  <p className="text-[9px] text-[var(--text-muted)]">{node.sub}</p>
+                  <p className="text-[10px] md:text-xs font-bold text-(--text-primary) leading-tight">{node.label}</p>
+                  <p className="text-[9px] text-(--text-muted)">{node.sub}</p>
                 </div>
               </button>
               {/* Arrow connector */}
               {i < nodes.length - 1 && (
-                <div className="flex flex-col items-center gap-0.5 flex-shrink-0">
-                  <svg className="w-5 h-5 text-[var(--accent)] opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <div className="flex flex-col items-center gap-0.5 shrink-0">
+                  <svg className="w-5 h-5 text-(--accent) opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 </div>
@@ -158,16 +158,16 @@ export function CREArchitectureDiagram() {
         {/* Detail panel — shows when a node is clicked */}
         {active && (
           <div
-            className="rounded-xl p-4 border border-[var(--border)] mb-4 animate-fade-in"
+            className="rounded-xl p-4 border border-(--border) mb-4 animate-fade-in"
             style={{ background: active.bgColor }}
           >
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center" style={{ background: active.color, color: '#fff' }}>
+              <div className="w-9 h-9 rounded-lg shrink-0 flex items-center justify-center" style={{ background: active.color, color: '#fff' }}>
                 {active.icon}
               </div>
               <div>
-                <p className="text-sm font-bold text-[var(--text-primary)]">{active.label}</p>
-                <p className="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">{active.description}</p>
+                <p className="text-sm font-bold text-(--text-primary)">{active.label}</p>
+                <p className="text-xs text-(--text-secondary) mt-1 leading-relaxed">{active.description}</p>
               </div>
             </div>
           </div>
@@ -176,11 +176,11 @@ export function CREArchitectureDiagram() {
         {/* Bottom — actors / ecosystem */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {actors.map(a => (
-            <div key={a.label} className="flex items-center gap-2 bg-[var(--surface-input)] rounded-lg px-3 py-2 border border-[var(--border)]">
+            <div key={a.label} className="flex items-center gap-2 bg-(--surface-input) rounded-lg px-3 py-2 border border-(--border)">
               <div style={{ color: a.color }}>{a.icon}</div>
               <div>
-                <p className="text-[10px] font-semibold text-[var(--text-primary)]">{a.label}</p>
-                <p className="text-[9px] text-[var(--text-muted)]">{a.sub}</p>
+                <p className="text-[10px] font-semibold text-(--text-primary)">{a.label}</p>
+                <p className="text-[9px] text-(--text-muted)">{a.sub}</p>
               </div>
             </div>
           ))}
@@ -188,7 +188,7 @@ export function CREArchitectureDiagram() {
 
         {/* Tap instruction */}
         {!activeNode && (
-          <p className="text-[9px] text-[var(--text-faint)] text-center mt-3 animate-pulse">
+          <p className="text-[9px] text-(--text-faint) text-center mt-3 animate-pulse">
             ↑ Tap any step to see details
           </p>
         )}

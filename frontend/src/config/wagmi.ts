@@ -30,7 +30,15 @@ export const config = createConfig({
   connectors,
   chains: [sepolia],
   transports: {
-    [sepolia.id]: http(rpcUrl),
+    [sepolia.id]: http(rpcUrl, {
+      batch: true,
+    }),
   },
   ssr: true,
 });
+
+// Increase EventEmitter limit to prevent MaxListenersExceededWarning
+// caused by many useWaitForTransactionReceipt hooks across components
+if (typeof globalThis !== 'undefined' && typeof globalThis.process !== 'undefined') {
+  try { globalThis.process.setMaxListeners?.(20); } catch { /* noop */ }
+}
