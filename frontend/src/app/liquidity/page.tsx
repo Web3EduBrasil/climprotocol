@@ -1,38 +1,69 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { mockProtocolStats, mockLPHistory } from '@/config/mockData';
+import { useProtocolStats } from '@/hooks/useProtocolStats';
+import { useLPBalance } from '@/hooks/useLPBalance';
+import { useProvideLiquidity, useWithdrawLiquidity } from '@/hooks/useContractWrite';
 import { StatsCard } from '@/components/ui/StatsCard';
 import { formatEther } from 'viem';
 import { HiOutlineBanknotes, HiOutlineLockClosed, HiOutlineArrowTrendingUp, HiOutlineShieldCheck } from 'react-icons/hi2';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function LiquidityPage() {
   const { t } = useLanguage();
+  const { stats, isLoading: statsLoading } = useProtocolStats();
+  const { balance: lpBalance, isConnected } = useLPBalance();
+  const { deposit, isPending: depositPending, isConfirming: depositConfirming, isSuccess: depositSuccess, error: depositError, reset: resetDeposit } = useProvideLiquidity();
+  const { withdraw, isPending: withdrawPending, isConfirming: withdrawConfirming, isSuccess: withdrawSuccess, error: withdrawError, reset: resetWithdraw } = useWithdrawLiquidity();
+
   const [depositAmount, setDepositAmount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
-  const [depositStatus, setDepositStatus] = useState<'idle' | 'pending' | 'success'>('idle');
-  const [withdrawStatus, setWithdrawStatus] = useState<'idle' | 'pending' | 'success'>('idle');
 
-  const stats = mockProtocolStats;
-  const totalEth = Number(formatEther(stats.totalLiquidity));
-  const availableEth = Number(formatEther(stats.availableLiquidity));
-  const lockedEth = Number(formatEther(stats.lockedCollateral));
-  const mockUserLPBalance = 5.2;
-  const mockYield = 0.32;
+  const totalEth = stats ? Number(formatEther(stats.totalLiquidity)) : 0;
+  const availableEth = stats ? Number(formatEther(stats.availableLiquidity)) : 0;
+  const lockedEth = stats ? Number(formatEther(stats.lockedCollateral)) : 0;
+  const userLPBalance = Number(formatEther(lpBalance));
+
+  // Reset forms after success
+  useEffect(() => {
+    if (depositSuccess) {
+      setDepositAmount('');
+      const timer = setTimeout(() => resetDeposit(), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [depositSuccess, resetDeposit]);
+
+  useEffect(() => {
+    if (withdrawSuccess) {
+      setWithdrawAmount('');
+      const timer = setTimeout(() => resetWithdraw(), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [withdrawSuccess, resetWithdraw]);
 
   const handleDeposit = () => {
     if (!depositAmount || Number(depositAmount) <= 0) return;
-    setDepositStatus('pending');
-    setTimeout(() => { setDepositStatus('success'); setTimeout(() => { setDepositStatus('idle'); setDepositAmount(''); }, 2000); }, 1500);
+    deposit(depositAmount);
   };
 
   const handleWithdraw = () => {
-    if (!withdrawAmount || Number(withdrawAmount) <= 0 || Number(withdrawAmount) > mockUserLPBalance) return;
-    setWithdrawStatus('pending');
-    setTimeout(() => { setWithdrawStatus('success'); setTimeout(() => { setWithdrawStatus('idle'); setWithdrawAmount(''); }, 2000); }, 1500);
+    if (!withdrawAmount || Number(withdrawAmount) <= 0 || Number(withdrawAmount) > userLPBalance) return;
+    withdraw(withdrawAmount);
   };
+
+  const depositStatus = depositSuccess ? 'success' : (depositPending || depositConfirming) ? 'pending' : 'idle';
+  const withdrawStatus = withdrawSuccess ? 'success' : (withdrawPending || withdrawConfirming) ? 'pending' : 'idle';
+
+  if (statsLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm text-[var(--text-muted)]">Loading pool data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -46,36 +77,13 @@ export default function LiquidityPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard icon={<HiOutlineBanknotes className="w-5 h-5" />} label={t.stats.totalLiquidity} value={`${totalEth.toFixed(1)} ETH`} trend="up" />
-        <StatsCard icon={<HiOutlineArrowTrendingUp className="w-5 h-5" />} label={t.stats.available} value={`${availableEth.toFixed(1)} ETH`} subValue={`${((availableEth / totalEth) * 100).toFixed(0)}% ${t.stats.ofTotal}`} trend="neutral" />
+        <StatsCard icon={<HiOutlineArrowTrendingUp className="w-5 h-5" />} label={t.stats.available} value={`${availableEth.toFixed(1)} ETH`} subValue={totalEth > 0 ? `${((availableEth / totalEth) * 100).toFixed(0)}% ${t.stats.ofTotal}` : '0%'} trend="neutral" />
         <StatsCard icon={<HiOutlineLockClosed className="w-5 h-5" />} label={t.liquidity.lockedCollateral} value={`${lockedEth.toFixed(1)} ETH`} subValue={t.liquidity.backingEvents} />
-        <StatsCard icon={<HiOutlineShieldCheck className="w-5 h-5" />} label={t.liquidity.overcollateralization} value={`${stats.overcollateralizationRatio / 10}%`} subValue={t.stats.guaranteeRatio} />
-      </div>
-
-      <div className="glass rounded-2xl p-5">
-        <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-4">{t.liquidity.evolution}</h3>
-        <ResponsiveContainer width="100%" height={200}>
-          <AreaChart data={mockLPHistory} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-            <defs>
-              <linearGradient id="totalGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#2A5ADA" stopOpacity={0.3} />
-                <stop offset="100%" stopColor="#2A5ADA" stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id="availGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#2DD4BF" stopOpacity={0.3} />
-                <stop offset="100%" stopColor="#2DD4BF" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(128,128,128,0.1)" vertical={false} />
-            <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(128,128,128,0.5)' }} />
-            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(128,128,128,0.5)' }} />
-            <Tooltip contentStyle={{ backgroundColor: 'var(--surface-strong)', border: '1px solid var(--border-strong)', borderRadius: '12px', fontSize: '12px', color: 'var(--text-primary)' }} />
-            <Area type="monotone" dataKey="totalLiquidity" name="Total" stroke="#2A5ADA" strokeWidth={2} fill="url(#totalGrad)" />
-            <Area type="monotone" dataKey="availableLiquidity" name={t.stats.available} stroke="#2DD4BF" strokeWidth={2} fill="url(#availGrad)" />
-          </AreaChart>
-        </ResponsiveContainer>
+        <StatsCard icon={<HiOutlineShieldCheck className="w-5 h-5" />} label={t.liquidity.overcollateralization} value={`${(stats?.overcollateralizationRatio ?? 0) / 10}%`} subValue={t.stats.guaranteeRatio} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Deposit */}
         <div className="glass rounded-2xl p-5">
           <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-4">{t.liquidity.deposit}</h3>
           <div className="space-y-4">
@@ -86,6 +94,7 @@ export default function LiquidityPage() {
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[var(--text-faint)] font-medium">ETH</span>
               </div>
             </div>
+            {depositError && <p className="text-xs text-red-400">{depositError.message?.slice(0, 80)}</p>}
             <button onClick={handleDeposit} disabled={depositStatus !== 'idle' || !depositAmount} className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${depositStatus === 'success' ? 'bg-green-500 text-white' : depositStatus === 'pending' ? 'bg-[var(--accent)]/50 text-[var(--bg-primary)] cursor-wait' : 'btn-primary'}`}>
               {depositStatus === 'idle' && t.liquidity.depositBtn}
               {depositStatus === 'pending' && t.liquidity.processing}
@@ -94,19 +103,21 @@ export default function LiquidityPage() {
           </div>
         </div>
 
+        {/* Withdraw */}
         <div className="glass rounded-2xl p-5">
           <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-4">{t.liquidity.withdraw}</h3>
           <div className="space-y-4">
             <div>
               <div className="flex justify-between mb-1.5">
                 <label className="text-xs text-[var(--text-muted)]">{t.liquidity.amount}</label>
-                <span className="text-xs text-[var(--text-faint)]">{t.stats.available}: {mockUserLPBalance} ETH</span>
+                <span className="text-xs text-[var(--text-faint)]">{t.stats.available}: {userLPBalance.toFixed(4)} ETH</span>
               </div>
               <div className="relative">
-                <input type="number" value={withdrawAmount} onChange={(e) => setWithdrawAmount(e.target.value)} placeholder="0.00" step="0.01" min="0" max={mockUserLPBalance} className="w-full h-12 bg-[var(--surface-input)] border border-[var(--border)] rounded-xl px-4 pr-16 text-[var(--text-primary)] font-medium focus:border-[var(--accent)] focus:outline-none transition-colors" />
-                <button onClick={() => setWithdrawAmount(String(mockUserLPBalance))} className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[var(--accent)] hover:opacity-80 transition-colors">{t.liquidity.max}</button>
+                <input type="number" value={withdrawAmount} onChange={(e) => setWithdrawAmount(e.target.value)} placeholder="0.00" step="0.01" min="0" max={userLPBalance} className="w-full h-12 bg-[var(--surface-input)] border border-[var(--border)] rounded-xl px-4 pr-16 text-[var(--text-primary)] font-medium focus:border-[var(--accent)] focus:outline-none transition-colors" />
+                <button onClick={() => setWithdrawAmount(userLPBalance.toString())} className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[var(--accent)] hover:opacity-80 transition-colors">{t.liquidity.max}</button>
               </div>
             </div>
+            {withdrawError && <p className="text-xs text-red-400">{withdrawError.message?.slice(0, 80)}</p>}
             <button onClick={handleWithdraw} disabled={withdrawStatus !== 'idle' || !withdrawAmount} className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${withdrawStatus === 'success' ? 'bg-green-500 text-white' : withdrawStatus === 'pending' ? 'bg-[var(--accent)]/50 text-[var(--bg-primary)] cursor-wait' : 'btn-secondary'}`}>
               {withdrawStatus === 'idle' && t.liquidity.withdrawBtn}
               {withdrawStatus === 'pending' && t.liquidity.processing}
@@ -116,23 +127,22 @@ export default function LiquidityPage() {
         </div>
       </div>
 
-      <div className="glass rounded-2xl p-5">
-        <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-4">{t.liquidity.yourPosition}</h3>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-[var(--surface-input)] rounded-xl p-4 text-center">
-            <p className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-1">{t.liquidity.deposited}</p>
-            <p className="text-xl font-bold text-[var(--text-primary)]">{mockUserLPBalance} ETH</p>
-          </div>
-          <div className="bg-[var(--surface-input)] rounded-xl p-4 text-center">
-            <p className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-1">{t.liquidity.yieldEarned}</p>
-            <p className="text-xl font-bold text-[var(--accent)]">+{mockYield} ETH</p>
-          </div>
-          <div className="bg-[var(--surface-input)] rounded-xl p-4 text-center">
-            <p className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-1">{t.liquidity.estApy}</p>
-            <p className="text-xl font-bold text-[var(--accent)]">~12%</p>
+      {/* User Position */}
+      {isConnected && (
+        <div className="glass rounded-2xl p-5">
+          <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-4">{t.liquidity.yourPosition}</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-[var(--surface-input)] rounded-xl p-4 text-center">
+              <p className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-1">{t.liquidity.deposited}</p>
+              <p className="text-xl font-bold text-[var(--text-primary)]">{userLPBalance.toFixed(4)} ETH</p>
+            </div>
+            <div className="bg-[var(--surface-input)] rounded-xl p-4 text-center">
+              <p className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-1">{t.liquidity.poolShare}</p>
+              <p className="text-xl font-bold text-[var(--accent)]">{totalEth > 0 ? ((userLPBalance / totalEth) * 100).toFixed(2) : '0'}%</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

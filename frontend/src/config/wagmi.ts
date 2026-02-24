@@ -10,7 +10,7 @@ import {
 import { createConfig, http } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
 
-const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL || 'https://rpc.sepolia.org';
+const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com';
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'demo-project-id';
 
 const connectors = connectorsForWallets(

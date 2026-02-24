@@ -1,21 +1,48 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { mockEvents, mockPortfolio } from '@/config/mockData';
+import { useClimateEvents } from '@/hooks/useClimateEvents';
+import { useUserPortfolio } from '@/hooks/useUserPortfolio';
+import { useBatchRedeem } from '@/hooks/useContractWrite';
 import { formatEther } from 'viem';
 import { HiOutlineScale, HiOutlineCheckCircle, HiOutlineXCircle, HiOutlineBolt } from 'react-icons/hi2';
+import { SiChainlink } from 'react-icons/si';
 
 export default function SettlementPage() {
   const { t } = useLanguage();
+  const { events, isLoading: eventsLoading } = useClimateEvents();
+  const { portfolio, isConnected } = useUserPortfolio();
+  const { redeem, isPending, isConfirming, isSuccess, error, reset } = useBatchRedeem();
   const [redeemingId, setRedeemingId] = useState<string | null>(null);
   const [redeemedIds, setRedeemedIds] = useState<Set<string>>(new Set());
-  const settledEvents = mockEvents.filter(e => e.status === 'SETTLED');
 
-  const handleRedeem = (eventId: string) => {
+  const settledEvents = events.filter(e => e.status === 'SETTLED');
+
+  useEffect(() => {
+    if (isSuccess && redeemingId) {
+      setRedeemedIds(prev => new Set([...prev, redeemingId]));
+      setRedeemingId(null);
+      const timer = setTimeout(() => reset(), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isSuccess, redeemingId, reset]);
+
+  const handleRedeem = (eventId: string, eventBigId: bigint) => {
     setRedeemingId(eventId);
-    setTimeout(() => { setRedeemedIds(prev => new Set([...prev, eventId])); setRedeemingId(null); }, 2000);
+    redeem([eventBigId]);
   };
+
+  if (eventsLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm text-[var(--text-muted)]">Loading settled events...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -27,12 +54,46 @@ export default function SettlementPage() {
         <p className="text-sm text-[var(--text-muted)]">{t.settlement.subtitle}</p>
       </div>
 
+      {/* CRE Workflow Pipeline Diagram */}
+      <div className="glass rounded-2xl p-5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#2A5ADA]/5 via-transparent to-[var(--accent-glow)] pointer-events-none" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-4">
+            <SiChainlink className="w-4 h-4 text-[#2A5ADA]" />
+            <h3 className="text-xs font-bold text-[var(--text-primary)] uppercase tracking-wider">CRE Settlement Workflow</h3>
+            <span className="text-[9px] bg-green-500/15 text-green-400 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 pulse-green" /> Active on DON
+            </span>
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto pb-2">
+            {[
+              { label: 'Cron Trigger', sub: 'Every 6h check', color: '#2A5ADA' },
+              { label: 'EVM Read', sub: 'getActiveEvents()', color: '#2A5ADA' },
+              { label: 'HTTP Fetch', sub: 'Open-Meteo API', color: 'var(--accent)' },
+              { label: 'Consensus', sub: 'DON Median', color: '#2A5ADA' },
+              { label: 'EVM Write', sub: 'Settlement Tx', color: 'var(--accent)' },
+              { label: 'Log Monitor', sub: 'SettlementCompleted', color: '#2A5ADA' },
+            ].map((step, i, arr) => (
+              <div key={step.label} className="flex items-center gap-2 flex-shrink-0">
+                <div className="bg-[var(--surface-input)] rounded-xl px-3 py-2 border border-[var(--border)] min-w-[110px] text-center hover:border-[var(--accent)] transition-colors">
+                  <p className="text-[10px] font-bold" style={{ color: step.color }}>{step.label}</p>
+                  <p className="text-[9px] text-[var(--text-muted)] mt-0.5">{step.sub}</p>
+                </div>
+                {i < arr.length - 1 && (
+                  <svg className="w-4 h-4 text-[var(--text-faint)] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div className="space-y-4">
         {settledEvents.map(event => {
-          const userItem = mockPortfolio.find(p => p.eventId === event.eventId);
+          const userItem = portfolio.find(p => p.eventId === event.eventId);
           const hasTokens = userItem && userItem.tokenBalance > 0;
           const isRedeemed = redeemedIds.has(event.id);
-          const isRedeeming = redeemingId === event.id;
+          const isRedeeming = redeemingId === event.id && (isPending || isConfirming);
 
           return (
             <div key={event.id} className="glass rounded-2xl overflow-hidden card-hover">
@@ -51,7 +112,7 @@ export default function SettlementPage() {
                     <p className="text-xs text-[var(--text-muted)]">{event.region}, {event.state}</p>
                   </div>
                   <span className="text-xs text-[var(--text-faint)]">
-                    {new Date(event.startTime * 1000).toLocaleDateString('pt-BR')} — {new Date(event.endTime * 1000).toLocaleDateString('pt-BR')}
+                    {new Date(event.startTime * 1000).toLocaleDateString('en-US')} — {new Date(event.endTime * 1000).toLocaleDateString('en-US')}
                   </span>
                 </div>
 
@@ -105,19 +166,20 @@ export default function SettlementPage() {
                   </div>
                 </div>
 
-                {hasTokens && event.payoutTriggered && (
+                {isConnected && hasTokens && event.payoutTriggered && (
                   <div className="bg-gradient-to-r from-[var(--accent-glow)] to-green-500/5 rounded-xl p-4 border border-[var(--border)]">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-semibold text-[var(--text-primary)]">{t.settlement.youHave} {userItem!.tokenBalance} {t.settlement.tokensToRedeem}</p>
                         <p className="text-xs text-[var(--accent)] mt-0.5">{t.protection.payout}: {Number(formatEther(userItem!.potentialPayout)).toFixed(4)} ETH</p>
                       </div>
-                      <button onClick={() => handleRedeem(event.id)} disabled={isRedeeming || isRedeemed} className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${isRedeemed ? 'bg-green-500 text-white' : isRedeeming ? 'opacity-50 cursor-wait btn-primary' : 'btn-primary'}`}>
+                      <button onClick={() => handleRedeem(event.id, event.eventId)} disabled={isRedeeming || isRedeemed} className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${isRedeemed ? 'bg-green-500 text-white' : isRedeeming ? 'opacity-50 cursor-wait btn-primary' : 'btn-primary'}`}>
                         {isRedeemed && t.settlement.redeemed}
                         {isRedeeming && t.settlement.redeeming}
                         {!isRedeemed && !isRedeeming && (<span className="flex items-center gap-1.5"><HiOutlineBolt className="w-4 h-4" />{t.settlement.redeemPayout}</span>)}
                       </button>
                     </div>
+                    {error && <p className="text-xs text-red-400 mt-2">{error.message?.slice(0, 80)}</p>}
                   </div>
                 )}
               </div>

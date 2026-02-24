@@ -12,7 +12,7 @@ export function ChainlinkBadge() {
     >
       <SiChainlink className="w-3.5 h-3.5 text-[#2A5ADA] group-hover:text-[#375BD2] transition-colors" />
       <span className="text-[10px] font-medium text-[#2A5ADA]/80 group-hover:text-[#2A5ADA] transition-colors whitespace-nowrap">
-        Powered by Chainlink
+        Built with Chainlink
       </span>
     </a>
   );
@@ -28,7 +28,7 @@ export function ChainlinkBadgeLarge() {
     >
       <SiChainlink className="w-5 h-5 text-[#2A5ADA] group-hover:text-[#375BD2] transition-colors" />
       <div className="text-left">
-        <p className="text-xs font-semibold text-[#2A5ADA]">Powered by Chainlink</p>
+        <p className="text-xs font-semibold text-[#2A5ADA]">Built with Chainlink</p>
         <p className="text-[10px] text-[#2A5ADA]/60">Functions · Automation · CCIP</p>
       </div>
     </a>

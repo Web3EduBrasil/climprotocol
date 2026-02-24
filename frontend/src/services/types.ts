@@ -1,6 +1,6 @@
 // ============================================
 // Core Domain Types for Clim Protocol
-// Used by services, components, and pages
+// Used by hooks, components, and pages
 // ============================================
 
 export type EventStatus = 'ACTIVE' | 'SETTLED' | 'EXPIRED';

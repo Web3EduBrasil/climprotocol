@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { translations, type Locale, type Translations } from './translations';
 
 interface LanguageContextType {
@@ -10,13 +10,23 @@ interface LanguageContextType {
 }
 
 const LanguageContext = createContext<LanguageContextType>({
-  locale: 'pt',
-  t: translations.pt,
+  locale: 'en',
+  t: translations.en,
   setLocale: () => { },
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>('pt');
+  const [locale, setLocaleState] = useState<Locale>('en');
+  const [hydrated, setHydrated] = useState(false);
+
+  // Read localStorage only after hydration to avoid SSR mismatch
+  useEffect(() => {
+    const stored = localStorage.getItem('clim-locale');
+    if (stored === 'en' || stored === 'es' || stored === 'pt') {
+      setLocaleState(stored);
+    }
+    setHydrated(true);
+  }, []);
 
   const setLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale);

@@ -1,17 +1,77 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { mockPrecipitationData } from '@/config/mockData';
 import { useLanguage } from '@/i18n/LanguageContext';
+import type { PrecipitationDataPoint } from '@/services/types';
 
 interface PrecipitationChartProps {
   threshold?: number;
+  latitude?: number;
+  longitude?: number;
   className?: string;
 }
 
-export function PrecipitationChart({ threshold = 150, className = '' }: PrecipitationChartProps) {
+/**
+ * Fetches daily precipitation data from Open-Meteo API and displays an accumulated chart.
+ * Defaults to Araripina, PE coordinates if none provided.
+ */
+export function PrecipitationChart({ threshold = 150, latitude = -7.57, longitude = -40.50, className = '' }: PrecipitationChartProps) {
   const { t } = useLanguage();
-  const data = mockPrecipitationData;
+  const [data, setData] = useState<PrecipitationDataPoint[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPrecipitation = async () => {
+      try {
+        // Fetch last 90 days of daily precipitation from Open-Meteo
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - 90);
+
+        const startStr = start.toISOString().split('T')[0];
+        const endStr = end.toISOString().split('T')[0];
+
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=precipitation_sum&start_date=${startStr}&end_date=${endStr}&timezone=America/Recife`;
+        const res = await fetch(url);
+        const json = await res.json();
+
+        if (json.daily?.time && json.daily?.precipitation_sum) {
+          let accumulated = 0;
+          const points: PrecipitationDataPoint[] = json.daily.time.map((date: string, i: number) => {
+            const daily = json.daily.precipitation_sum[i] ?? 0;
+            accumulated += daily;
+            return {
+              day: i + 1,
+              date: new Date(date).toLocaleDateString('en-US', { day: '2-digit', month: 'short' }),
+              daily: Math.round(daily * 10) / 10,
+              accumulated: Math.round(accumulated * 10) / 10,
+            };
+          });
+          setData(points);
+        }
+      } catch (err) {
+        console.error('Failed to fetch precipitation data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPrecipitation();
+  }, [latitude, longitude]);
+
+  if (loading) {
+    return (
+      <div className={`glass rounded-2xl p-5 ${className}`}>
+        <div className="flex items-center justify-center h-[300px]">
+          <div className="text-center">
+            <div className="w-6 h-6 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            <p className="text-xs text-[var(--text-muted)]">Buscando dados climáticos...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`glass rounded-2xl p-5 ${className}`}>
@@ -29,6 +89,7 @@ export function PrecipitationChart({ threshold = 150, className = '' }: Precipit
             <div className="w-3 h-0.5 bg-red-400 rounded-full border-dashed"></div>
             <span className="text-[var(--text-muted)]">Threshold ({threshold} mm)</span>
           </div>
+          <span className="text-[9px] text-[var(--text-faint)] bg-[var(--surface-input)] px-2 py-0.5 rounded">Open-Meteo</span>
         </div>
       </div>
 

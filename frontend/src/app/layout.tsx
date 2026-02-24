@@ -1,13 +1,20 @@
 import type { Metadata, Viewport } from 'next';
+import { Inter } from 'next/font/google';
 import { Providers } from '@/components/Providers';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ServiceWorkerRegistrar } from '../components/layout/ServiceWorkerRegistrar';
 import './globals.css';
 
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
 export const metadata: Metadata = {
-  title: 'Clim Protocol — Proteção Paramétrica contra Seca',
-  description: 'Seguro paramétrico descentralizado contra seca para agricultores familiares do Semiárido de Pernambuco. Chainlink Functions & Automation.',
+  title: 'Clim Protocol — Parametric Drought Protection',
+  description: 'Decentralized parametric climate insurance for smallholder farmers in the Brazilian Semiárido. Built with Chainlink CRE, Functions & Automation.',
   keywords: ['DeFi', 'Chainlink', 'Climate', 'Insurance', 'Agriculture', 'Blockchain', 'Parametric'],
   manifest: '/manifest.json',
   appleWebApp: {
@@ -16,8 +23,8 @@ export const metadata: Metadata = {
     title: 'Clim Protocol',
   },
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/newLogo.png',
+    apple: '/newLogo.png',
   },
 };
 
@@ -50,7 +57,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

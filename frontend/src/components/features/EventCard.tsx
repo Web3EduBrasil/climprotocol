@@ -1,12 +1,12 @@
 'use client';
 
 import { useLanguage } from '@/i18n/LanguageContext';
-import { MockClimateEvent } from '@/types';
+import type { ClimateEvent } from '@/services/types';
 import { formatEther } from 'viem';
 import Link from 'next/link';
 
 interface EventCardProps {
-  event: MockClimateEvent;
+  event: ClimateEvent;
   showCTA?: boolean;
 }
 
@@ -20,8 +20,8 @@ export function EventCard({ event, showCTA = true }: EventCardProps) {
   };
 
   const status = statusConfig[event.status];
-  const startDate = new Date(event.startTime * 1000).toLocaleDateString('pt-BR');
-  const endDate = new Date(event.endTime * 1000).toLocaleDateString('pt-BR');
+  const startDate = new Date(event.startTime * 1000).toLocaleDateString('en-US');
+  const endDate = new Date(event.endTime * 1000).toLocaleDateString('en-US');
   const premiumEth = formatEther(event.premiumPerToken);
   const payoutEth = formatEther(event.payoutPerToken);
 

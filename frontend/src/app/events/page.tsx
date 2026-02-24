@@ -2,15 +2,16 @@
 
 import { useState } from 'react';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { mockEvents } from '@/config/mockData';
+import { useClimateEvents } from '@/hooks/useClimateEvents';
 import type { EventStatus } from '@/services/types';
 import { EventCard } from '@/components/features/EventCard';
 import { HiOutlineChartBar, HiOutlineFunnel } from 'react-icons/hi2';
 
 export default function EventsPage() {
   const { t } = useLanguage();
+  const { events, isLoading } = useClimateEvents();
   const [filter, setFilter] = useState<EventStatus | 'ALL'>('ALL');
-  const filteredEvents = filter === 'ALL' ? mockEvents : mockEvents.filter(e => e.status === filter);
+  const filteredEvents = filter === 'ALL' ? events : events.filter(e => e.status === filter);
 
   const statusFilters: { value: EventStatus | 'ALL'; label: string }[] = [
     { value: 'ALL', label: t.events.all },
@@ -18,6 +19,17 @@ export default function EventsPage() {
     { value: 'SETTLED', label: t.events.settled },
     { value: 'EXPIRED', label: t.events.expired },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm text-[var(--text-muted)]">Loading events...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

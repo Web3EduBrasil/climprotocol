@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { MockClimateEvent } from '@/types';
+import { useState, useEffect } from 'react';
+import type { ClimateEvent } from '@/services/types';
+import { useQuickBuy } from '@/hooks/useContractWrite';
 import { formatEther } from 'viem';
 import { HiOutlineXMark, HiOutlineShieldCheck } from 'react-icons/hi2';
 import { useLanguage } from '@/i18n/LanguageContext';
 
 interface BuyModalProps {
-  event: MockClimateEvent;
+  event: ClimateEvent;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -15,7 +16,17 @@ interface BuyModalProps {
 export function BuyModal({ event, isOpen, onClose }: BuyModalProps) {
   const { t } = useLanguage();
   const [quantity, setQuantity] = useState(1);
-  const [status, setStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
+  const { buy, isPending, isConfirming, isSuccess, error, reset } = useQuickBuy();
+
+  useEffect(() => {
+    if (isSuccess) {
+      const timer = setTimeout(() => {
+        reset();
+        onClose();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isSuccess, onClose, reset]);
 
   if (!isOpen) return null;
 
@@ -25,12 +36,10 @@ export function BuyModal({ event, isOpen, onClose }: BuyModalProps) {
   const potentialPayout = payoutPerToken * quantity;
   const maxTokens = event.availableTokens;
 
+  const status = isSuccess ? 'success' : (isPending || isConfirming) ? 'pending' : error ? 'error' : 'idle';
+
   const handleBuy = async () => {
-    setStatus('pending');
-    setTimeout(() => {
-      setStatus('success');
-      setTimeout(() => { setStatus('idle'); onClose(); }, 2000);
-    }, 1500);
+    buy(event.eventId, quantity, event.premiumPerToken);
   };
 
   return (
@@ -99,9 +108,11 @@ export function BuyModal({ event, isOpen, onClose }: BuyModalProps) {
           </div>
           <div className="flex justify-between text-xs mt-2 pt-2 border-t border-[var(--border)]">
             <span className="text-[var(--text-faint)]">{t.modal.returnPotential}</span>
-            <span className="text-[var(--accent)] font-semibold">{((potentialPayout / totalCost - 1) * 100).toFixed(0)}%</span>
+            <span className="text-[var(--accent)] font-semibold">{totalCost > 0 ? ((potentialPayout / totalCost - 1) * 100).toFixed(0) : '0'}%</span>
           </div>
         </div>
+
+        {error && <p className="text-xs text-red-400 mb-3">{error.message?.slice(0, 80)}</p>}
 
         <button onClick={handleBuy} disabled={status === 'pending' || status === 'success'} className={`w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-300 ${status === 'success' ? 'bg-green-500 text-white' : status === 'pending' ? 'bg-[var(--accent)]/50 text-[var(--bg-primary)] cursor-wait' : 'btn-primary'}`}>
           {status === 'idle' && `${t.modal.buyTokens.replace('Token(s)', `${quantity} Token${quantity > 1 ? 's' : ''}`)}`}

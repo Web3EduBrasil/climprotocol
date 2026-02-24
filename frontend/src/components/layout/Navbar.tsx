@@ -8,10 +8,12 @@ import { HiOutlineHome, HiOutlineShieldCheck, HiOutlineCurrencyDollar, HiOutline
 import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { useAdminRoles } from '@/hooks/useAdminRoles';
 
 export function Navbar() {
   const pathname = usePathname();
   const { t } = useLanguage();
+  const { isAnyAdmin } = useAdminRoles();
 
   const navItems = [
     { href: '/', label: t.nav.dashboard, icon: HiOutlineHome },
@@ -19,8 +21,9 @@ export function Navbar() {
     { href: '/liquidity', label: t.nav.liquidity, icon: HiOutlineCurrencyDollar },
     { href: '/events', label: t.nav.events, icon: HiOutlineChartBar },
     { href: '/settlement', label: t.nav.settlement, icon: HiOutlineScale },
-    { href: '/admin', label: 'Admin', icon: HiOutlineCog },
   ];
+
+  const isAdminActive = pathname === '/admin';
 
   return (
     <nav className="glass-strong sticky top-0 z-50">
@@ -29,7 +32,7 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-2 group">
             <div className="w-9 h-9 relative group-hover:scale-110 transition-transform duration-300">
               <Image
-                src="/logo.png"
+                src="/newLogo.png"
                 alt="Clim Protocol"
                 fill
                 className="object-contain"
@@ -56,6 +59,18 @@ export function Navbar() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <LanguageSwitcher />
+            {isAnyAdmin && (
+              <Link
+                href="/admin"
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 border ${isAdminActive
+                    ? 'bg-yellow-500/15 text-yellow-500 border-yellow-500/30'
+                    : 'bg-yellow-500/5 text-yellow-500/70 border-yellow-500/15 hover:bg-yellow-500/15 hover:text-yellow-500'
+                  }`}
+              >
+                <HiOutlineCog className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Admin</span>
+              </Link>
+            )}
             <ConnectButton chainStatus="icon" showBalance={false} accountStatus={{ smallScreen: 'avatar', largeScreen: 'full' }} />
           </div>
         </div>

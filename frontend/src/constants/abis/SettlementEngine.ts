@@ -1,0 +1,92 @@
+export const SETTLEMENT_ENGINE_ABI = [
+  {
+    type: 'function',
+    name: 'getActiveEvents',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getActiveEventCount',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'isEventSettled',
+    inputs: [{ name: 'eventId', type: 'uint256' }],
+    outputs: [{ name: '', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'eventsSettled',
+    inputs: [{ name: '', type: 'uint256' }],
+    outputs: [{ name: '', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'eventsRequested',
+    inputs: [{ name: '', type: 'uint256' }],
+    outputs: [{ name: '', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'addEventForSettlement',
+    inputs: [{ name: 'eventId', type: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'manualSettlement',
+    inputs: [{ name: 'eventId', type: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'processSettlement',
+    inputs: [{ name: 'eventId', type: 'uint256' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'checkUpkeep',
+    inputs: [{ name: '', type: 'bytes' }],
+    outputs: [
+      { name: 'upkeepNeeded', type: 'bool' },
+      { name: 'performData', type: 'bytes' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'performUpkeep',
+    inputs: [{ name: 'performData', type: 'bytes' }],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'event',
+    name: 'SettlementRequested',
+    inputs: [
+      { name: 'eventId', type: 'uint256', indexed: true },
+      { name: 'requestId', type: 'bytes32', indexed: false },
+    ],
+  },
+  {
+    type: 'event',
+    name: 'SettlementCompleted',
+    inputs: [
+      { name: 'eventId', type: 'uint256', indexed: true },
+      { name: 'precipitationMm', type: 'uint256', indexed: false },
+      { name: 'payoutTriggered', type: 'bool', indexed: false },
+    ],
+  },
+] as const;
