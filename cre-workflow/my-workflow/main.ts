@@ -142,13 +142,28 @@ const getActiveEvents = (
       }),
       blockNumber: LAST_FINALIZED_BLOCK_NUMBER,
     })
-    .result();
+  const contractCallResult = contractCall.result();
 
-  const eventIds = decodeFunctionResult({
-    abi: SettlementEngine,
-    functionName: "getActiveEvents",
-    data: bytesToHex(contractCall.data),
-  });
+  if (contractCallResult.data.length === 0 || bytesToHex(contractCallResult.data) === "0x") {
+    return [];
+  }
+
+  let eventIds: readonly unknown[];
+  try {
+    const rawResult = decodeFunctionResult({
+      abi: SettlementEngine,
+      functionName: "getActiveEvents",
+      data: contractCallResult.data && contractCallResult.data.length > 0 ? bytesToHex(contractCallResult.data) : "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000",
+    });
+    eventIds = Array.isArray(rawResult) ? rawResult : [rawResult];
+  } catch (e) {
+    return [];
+  }
+
+  // Ensure it's an array of BigInts
+  if (!eventIds || !Array.isArray(eventIds) || eventIds.length === 0) {
+    return [];
+  }
 
   return eventIds as bigint[];
 };
@@ -195,10 +210,12 @@ const getEventDetails = (
     })
     .result();
 
+  const contractCallResult = contractCall;
+
   const [eventData, , , isSettled] = decodeFunctionResult({
     abi: ClimProtocol,
     functionName: "getEventDetails",
-    data: bytesToHex(contractCall.data),
+    data: bytesToHex(contractCallResult.data),
   }) as [ClimateEventData, bigint, bigint, boolean];
 
   return { eventData, isSettled };
@@ -245,10 +262,12 @@ const checkUpkeep = (
     })
     .result();
 
+  const contractCallResult = contractCall;
+
   const [upkeepNeeded, performData] = decodeFunctionResult({
     abi: SettlementEngine,
     functionName: "checkUpkeep",
-    data: bytesToHex(contractCall.data),
+    data: bytesToHex(contractCallResult.data),
   }) as [boolean, `0x${string}`];
 
   return { upkeepNeeded, performData };
@@ -420,10 +439,17 @@ const onCronTrigger = (
 ): string => {
   runtime.log("=== Clim Protocol Settlement Workflow — Cron Tick ===");
 
-  // scheduledExecutionTime may be undefined in local simulation
-  const nowSec = payload.scheduledExecutionTime
-    ? Number(payload.scheduledExecutionTime)
-    : 0;
+  // Use current time as default fallback (covers simulation where payload is null/undefined)
+  let nowSec = Math.floor(Date.now() / 1000);
+
+  if (payload && payload.scheduledExecutionTime !== undefined && payload.scheduledExecutionTime !== null) {
+    try {
+      const parsed = Number(payload.scheduledExecutionTime.toString());
+      if (!isNaN(parsed) && parsed > 0) {
+        nowSec = parsed;
+      }
+    } catch (e) { }
+  }
 
   runtime.log(`Execution time (unix): ${nowSec}`);
 
@@ -431,9 +457,9 @@ const onCronTrigger = (
 
   // ── Step 1: Read active events from SettlementEngine ──────────────
   const activeEventIds = getActiveEvents(runtime, evmConfig);
-  runtime.log(`Active events on-chain: ${activeEventIds.length}`);
+  runtime.log(`Active events on-chain: ${activeEventIds ? activeEventIds.length : 0}`);
 
-  if (activeEventIds.length === 0) {
+  if (!activeEventIds || activeEventIds.length === 0) {
     runtime.log("No active events. Nothing to do.");
     return "no_active_events";
   }

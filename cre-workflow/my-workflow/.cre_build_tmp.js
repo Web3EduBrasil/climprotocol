@@ -16406,12 +16406,25 @@ var getActiveEvents = (runtime2, evmConfig) => {
       data: callData
     }),
     blockNumber: LAST_FINALIZED_BLOCK_NUMBER
-  }).result();
-  const eventIds = decodeFunctionResult({
-    abi: SettlementEngine,
-    functionName: "getActiveEvents",
-    data: bytesToHex(contractCall.data)
   });
+  const contractCallResult = contractCall.result();
+  if (contractCallResult.data.length === 0 || bytesToHex(contractCallResult.data) === "0x") {
+    return [];
+  }
+  let eventIds;
+  try {
+    const rawResult = decodeFunctionResult({
+      abi: SettlementEngine,
+      functionName: "getActiveEvents",
+      data: contractCallResult.data && contractCallResult.data.length > 0 ? bytesToHex(contractCallResult.data) : "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000"
+    });
+    eventIds = Array.isArray(rawResult) ? rawResult : [rawResult];
+  } catch (e) {
+    return [];
+  }
+  if (!eventIds || !Array.isArray(eventIds) || eventIds.length === 0) {
+    return [];
+  }
   return eventIds;
 };
 var getEventDetails = (runtime2, evmConfig, eventId) => {
@@ -16437,10 +16450,11 @@ var getEventDetails = (runtime2, evmConfig, eventId) => {
     }),
     blockNumber: LAST_FINALIZED_BLOCK_NUMBER
   }).result();
+  const contractCallResult = contractCall;
   const [eventData, , , isSettled] = decodeFunctionResult({
     abi: ClimProtocol,
     functionName: "getEventDetails",
-    data: bytesToHex(contractCall.data)
+    data: bytesToHex(contractCallResult.data)
   });
   return { eventData, isSettled };
 };
@@ -16467,10 +16481,11 @@ var checkUpkeep = (runtime2, evmConfig) => {
     }),
     blockNumber: LAST_FINALIZED_BLOCK_NUMBER
   }).result();
+  const contractCallResult = contractCall;
   const [upkeepNeeded, performData] = decodeFunctionResult({
     abi: SettlementEngine,
     functionName: "checkUpkeep",
-    data: bytesToHex(contractCall.data)
+    data: bytesToHex(contractCallResult.data)
   });
   return { upkeepNeeded, performData };
 };
@@ -16562,12 +16577,20 @@ var timestampToDate = (timestamp) => {
 };
 var onCronTrigger = (runtime2, payload) => {
   runtime2.log("=== Clim Protocol Settlement Workflow — Cron Tick ===");
-  const nowSec = payload.scheduledExecutionTime ? Number(payload.scheduledExecutionTime) : 0;
+  let nowSec = Math.floor(Date.now() / 1000);
+  if (payload && payload.scheduledExecutionTime !== undefined && payload.scheduledExecutionTime !== null) {
+    try {
+      const parsed = Number(payload.scheduledExecutionTime.toString());
+      if (!isNaN(parsed) && parsed > 0) {
+        nowSec = parsed;
+      }
+    } catch (e) {}
+  }
   runtime2.log(`Execution time (unix): ${nowSec}`);
   const evmConfig = runtime2.config.evms[0];
   const activeEventIds = getActiveEvents(runtime2, evmConfig);
-  runtime2.log(`Active events on-chain: ${activeEventIds.length}`);
-  if (activeEventIds.length === 0) {
+  runtime2.log(`Active events on-chain: ${activeEventIds ? activeEventIds.length : 0}`);
+  if (!activeEventIds || activeEventIds.length === 0) {
     runtime2.log("No active events. Nothing to do.");
     return "no_active_events";
   }
