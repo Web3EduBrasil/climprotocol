@@ -1,114 +1,212 @@
 # Clim Protocol
 
-**Parametric Drought Protection for Small Farmers** — Tokenização de Risco Climático usando Oráculos Descentralizados (MVP para Hackathon Chainlink Convergence 2026).
+**Parametric Drought Protection for Small Farmers** — Climate Risk Tokenization using Decentralized Oracles (MVP for Chainlink Convergence 2026 Hackathon).
 
 ---
 
-## 📚 Documentação Completa
+## 📚 Complete Documentation
 
-**✨ NOVA ESTRUTURA ORGANIZADA:** Toda documentação foi movida para a pasta [`docs/`](./docs/)
+**✨ NEW ORGANIZED STRUCTURE:** All documentation has been moved to the [`docs/`](./docs/) folder
 
-👉 **[ACESSE A DOCUMENTAÇÃO COMPLETA AQUI](./docs/README.md)**
+👉 **[ACCESS COMPLETE DOCUMENTATION HERE](./docs/README.md)**
 
-**Destaques:**
-- 🎤 **[PITCH_DECK.md](./docs/PITCH_DECK.md)** - **Apresentação para hackathon** 🏆
-- 📊 **[STATUS.md](./docs/STATUS.md)** - **Visão executiva do projeto**
-- ⭐ **[TEST_REPORT.md](./docs/phase3-testes-validacao/TEST_REPORT.md)** - **66/66 testes passando (100%)**
-- 📋 **[Phase 1: Planejamento](./docs/phase1-planejamento/)** - Arquitetura e design
-- 🔨 **[Phase 2: Implementação](./docs/phase2-implementacao/)** - Desenvolvimento dos contratos
-- ✅ **[Phase 3: Testes](./docs/phase3-testes-validacao/)** - Relatórios e cobertura
+**Highlights:**
+- 🎤 **[PROJECT_PRESENTATION.md](./docs/PROJECT_PRESENTATION.md)** - **Hackathon presentation** 🏆
+- 📊 **[STATUS.md](./docs/STATUS.md)** - **Executive project overview**
+- ⭐ **[TEST_REPORT.md](./docs/phase3-testes-validacao/TEST_REPORT.md)** - **66/66 tests passing (100%)**
+- 📋 **[Phase 1: Planning](./docs/phase1-planejamento/)** - Architecture and design
+- 🔨 **[Phase 2: Implementation](./docs/phase2-implementacao/)** - Contract development
+- ✅ **[Phase 3: Testing](./docs/phase3-testes-validacao/)** - Reports and coverage
 
 ---
 
-## Resumo
+## 🎬 CLI Demonstration (Hackathon)
 
-O Clim Protocol oferece **proteção paramétrica contra seca** para pequenos agricultores do **Semiárido de Pernambuco**. Tokenizamos eventos de seca como instrumentos on‑chain (Climate Event Tokens — CET) que pagam automaticamente quando a precipitação acumulada fica abaixo de 150mm em 90 dias. O MVP usa **Chainlink Functions** para consultar dados climáticos reais (Open-Meteo) e **Chainlink Automation** para executar liquidações automáticas.
+**Requirement:** 3-5 minute video demonstrating the workflow via CLI
 
-## 🎯 Foco do MVP
-- **Fenômeno**: Seca (Drought)
-- **Região**: Semiárido de Pernambuco (Nordeste do Brasil)
-- **Métrica**: Precipitação acumulada (mm)
-- **Período**: 90 dias
-- **Trigger**: Precipitação < 150mm
+📡 **[CLI_DEMO_GUIDE.md](./CLI_DEMO_GUIDE.md)** - Complete guide for CLI demonstration
+
+### Ready-to-Use Scripts
+
+```powershell
+# Complete demo (build + tests + workflow)
+.\demo-video.ps1
+
+# CRE Workflow focused demo
+.\demo-cre-workflow.ps1
+
+# Validate submission
+.\validate-submission.ps1
+```
+
+### What will be demonstrated:
+- ✅ Compilation and tests (66/66 passing)
+- ✅ Complete settlement workflow
+- ✅ Chainlink Functions + Automation integration
+- ✅ CRE workflow (DON consensus, HTTP fetch, EVM read/write)
+- ✅ Automatic payout to farmers
+
+---
+
+## Summary
+
+Clim Protocol offers **parametric drought protection** for small farmers in the **Semi-arid region of Pernambuco**. We tokenize drought events as on-chain instruments (Climate Event Tokens — CET) that automatically pay when accumulated precipitation falls below 150mm in 90 days. The MVP uses **Chainlink Functions** to query real climate data (Open-Meteo) and **Chainlink Automation** to execute automatic settlements.
+
+## 🎯 MVP Focus
+- **Phenomenon**: Drought
+- **Region**: Semi-arid Pernambuco (Northeast Brazil)
+- **Metric**: Accumulated precipitation (mm)
+- **Period**: 90 days
+- **Trigger**: Precipitation < 150mm
 - **Token**: ERC-1155 (Climate Event Tokens)
-- **Liquidação**: Automática via Chainlink Functions + Automation
+- **Settlement**: Automatic via Chainlink Functions + Automation
 
-## Arquitetura
+## Architecture
 
-- `Climate Event Factory` — cria definições de eventos (lat, lon, período, limiar)
-- `Climate Event Token (ERC-1155)` — representa a proteção
-- `Liquidity Pool` — capital para financiar payouts
-- `Settlement Engine` — coordena verificação e pagamentos
-- `Oracle Layer (Chainlink Functions)` — consulta Open‑Meteo e retorna métricas on‑chain
-- `Automation (Chainlink)` — dispara verificações/settlement em schedule
+- `Climate Event Factory` — creates event definitions (lat, lon, period, threshold)
+- `Climate Event Token (ERC-1155)` — represents the protection
+- `Liquidity Pool` — capital to fund payouts
+- `Settlement Engine` — coordinates verification and payments
+- `Oracle Layer (Chainlink Functions)` — queries Open-Meteo and returns on-chain metrics
+- `Automation (Chainlink)` — triggers verifications/settlement on schedule
 
-Diagrama (resumo):
+Diagram (summary):
 
+```
 Frontend → ClimProtocol (Facade) → Factory / Pool / Settlement
                                   ↑
-                                  Chainlink Functions + Automation
+                    Chainlink Functions + Automation
+```
 
-## Tecnologias
+## Technologies
 
 - Solidity (Foundry)
 - ERC-1155 (OpenZeppelin)
 - Chainlink Functions (Sepolia)
 - Chainlink Automation (Sepolia)
+- Chainlink CRE (Composable workflow)
 - Next.js + wagmi + viem (frontend)
-- Open-Meteo (API climática)
+- Open-Meteo (Climate API)
 
-## 🌾 Exemplo de Uso (Semiárido de Pernambuco)
+---
 
-1. **LP fornece liquidez**: Investidor deposita 50 ETH no pool
-2. **Admin cria evento**: "Seca no Sertão PE, jan-mar/2026 (90 dias), precipitação < 150mm, payout 0.05 ETH/token"
-3. **Agricultor compra tokens**: Paga premium de ~0.0275 ETH por token (proteção contra seca)
-4. **Período de 90 dias termina**: Chainlink Functions busca dados da Open-Meteo API
-5. **Liquidação automática**: Se precipitação acumulada < 150mm → payout disparado
-6. **Agricultor resgata**: Recebe 0.05 ETH por token diretamente na wallet
+## 🔗 Integração Chainlink - Arquivos
 
-## Estrutura proposta do repositório
+**Este projeto usa Chainlink Functions, Automation e CRE (Chainlink Runtime Environment)**
 
-- [contracts/](contracts/) — contratos Solidity (core, oracle, settlement)
+### Smart Contracts using Chainlink
+
+| File | Description | Chainlink Service |
+|------|-------------|-------------------|
+| [contracts/src/oracle/ClimateOracle.sol](./contracts/src/oracle/ClimateOracle.sol) | Chainlink Functions client | **Functions** |
+| [contracts/src/core/SettlementEngine.sol](./contracts/src/core/SettlementEngine.sol) | AutomationCompatible interface | **Automation** |
+
+**Main features:**
+- `ClimateOracle.sol`: Sends requests to Chainlink Functions, processes responses
+- `SettlementEngine.sol`: Implements `checkUpkeep()` and `performUpkeep()` for Automation
+
+### Chainlink Functions Source Code
+
+| File | Description |
+|------|-------------|
+| [functions/climate-data.js](./functions/climate-data.js) | JavaScript executed by DON - queries Open-Meteo API |
+
+**Flow:**
+1. `ClimateOracle.sendRequest()` → sends source code to DON
+2. DON executes `climate-data.js` → queries Open-Meteo API
+3. DON returns accumulated precipitation → `fulfillRequest()` callback
+4. Data saved on-chain → used in settlement
+
+| File | Description |
+|------|-------------|
+| [cre-workflow/my-workflow/main.ts](./cre-workflow/my-workflow/main.ts) | **TypeScript Workflow** - orchestrates the entire process |
+| [cre-workflow/my-workflow/config.json](./cre-workflow/my-workflow/config.json) | Configuration (RPC, contracts, API) |
+| [cre-workflow/my-workflow/workflow.yaml](./cre-workflow/my-workflow/workflow.yaml) | Deployment settings |
+| [cre-workflow/project.yaml](./cre-workflow/project.yaml) | CRE project configuration |
+| [cre-workflow/README.md](./cre-workflow/README.md) | Complete workflow documentation |
+
+**CRE Capabilities used:**
+- ⏰ **Cron Trigger** - Runs every 5 minutes
+- 📖 **EVM Read** - Reads active events from contracts
+- 🌐 **HTTP Fetch** - Queries Open-Meteo API with DON consensus
+- 🧮 **Compute** - Calculates if drought occurred (precipitation < threshold)
+- ✍️ **EVM Write** - Triggers on-chain settlement
+- 📡 **Event Trigger** - Reacts to `SettlementCompleted` events
+
+**Simulation/Deploy:**
+```bash
+cd cre-workflow/my-workflow
+bun install
+bun run main.ts  # Local simulation
+```
+
+**Complete guide:** [CRE_WORKFLOW_SETUP.md](./CRE_WORKFLOW_SETUP.md)
+
+| Arquivo | Descrição |
+|---------|-----------|
+| [contracts/script/Deploy.s.sol](./contracts/script/Deploy.s.sol) | Deploy completo + setup Chainlink subscription |
+
+### Configuration Files
+
+| Arquivo | Descrição |
+|---------|-----------|
+| [.env.example](./.env.example) | Template com variáveis Chainlink (subscription ID, etc) |
+| [contracts/foundry.toml](./contracts/foundry.toml) | Configuração Foundry (inclui Chainlink remappings) |
+
+---
+
+## 🌾 Usage Example (Semi-arid Pernambuco)
+
+1. **LP provides liquidity**: Investor deposits 50 ETH in pool
+2. **Admin creates event**: "Drought in Sertão PE, Jan-Mar/2026 (90 days), precipitation < 150mm, payout 0.05 ETH/token"
+3. **Farmer buys tokens**: Pays premium of ~0.0275 ETH per token (drought protection)
+4. **90 day period ends**: Chainlink Functions fetches data from Open-Meteo API
+5. **Automatic settlement**: If accumulated precipitation < 150mm → payout triggered
+6. **Farmer redeems**: Receives 0.05 ETH per token directly in wallet
+
+## Proposed Repository Structure
+
+- [contracts/](contracts/) — Solidity contracts (core, oracle, settlement)
 - [frontend/](frontend/) — Next.js app
-- [functions/](functions/) — código JavaScript para Chainlink Functions
-- `foundry.toml`, deploy scripts, testes
+- [functions/](functions/) — JavaScript code for Chainlink Functions
+- `foundry.toml`, deploy scripts, tests
 
-## Quickstart (desenvolvimento)
+## Quickstart (development)
 
-Pré-requisitos:
+Prerequisites:
 
 - Node.js v18+
-- Foundry (forge) instalado
-- Conta Sepolia com ETH e LINK de teste (https://faucets.chain.link/sepolia)
-- RPC Sepolia (Alchemy / Infura) — configurar `SEPOLIA_RPC`
+- Foundry (forge) installed
+- Sepolia account with test ETH and LINK (https://faucets.chain.link/sepolia)
+- Sepolia RPC (Alchemy / Infura) — configure `SEPOLIA_RPC`
 
-### Instalando Foundry no Windows
+### Installing Foundry on Windows
 
-Opção 1 - Via Rust (recomendado):
+Option 1 - Via Rust (recommended):
 ```bash
-# Instale Rust primeiro
+# Install Rust first
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs/ | sh
 
-# Instale Foundry
+# Install Foundry
 cargo install --git https://github.com/foundry-rs/foundry foundry-cli anvil --bins --locked
 ```
 
-Opção 2 - Binários pré-compilados:
-- Baixe os binários em https://github.com/foundry-rs/foundry/releases
-- Adicione ao PATH do Windows
+Option 2 - Pre-compiled binaries:
+- Download binaries at https://github.com/foundry-rs/foundry/releases
+- Add to Windows PATH
 
-Passos mínimos:
+Minimum steps:
 
-1. Clone o repositório
+1. Clone the repository
 
-2. Instalar dependências frontend:
+2. Install frontend dependencies:
 
 ```bash
 cd frontend
 npm install
 ```
 
-3. Configurar variáveis de ambiente (exemplo `.env`):
+3. Configure environment variables (`.env` example):
 
 ```
 SEPOLIA_RPC=https://...
@@ -116,71 +214,71 @@ PRIVATE_KEY=0x...
 NEXT_PUBLIC_RPC=https://...
 ```
 
-4. Rodar testes Foundry (local):
+4. Run Foundry tests (local):
 
 ```bash
 forge test -vvv --fork-url $SEPOLIA_RPC
 ```
 
-5. Deploy local de contratos (script Foundry):
+5. Local contract deploy (Foundry script):
 
 ```bash
 forge script script/Deploy.s.sol:Deploy --rpc-url $SEPOLIA_RPC --private-key $PRIVATE_KEY --broadcast
 ```
 
-6. Configurar Chainlink Functions:
+6. Configure Chainlink Functions:
 
-- Ir para https://functions.chain.link/ e criar subscription
-- Adicionar consumer (endereço do contrato `ClimateOracle` após deploy)
-- Financiar subscription com LINK testnet (mínimo ~2 LINK)
-- Testar o `source` no Functions Playground: https://functions.chain.link/playground
+- Go to https://functions.chain.link/ and create subscription
+- Add consumer (contract address of `ClimateOracle` after deploy)
+- Fund subscription with testnet LINK (minimum ~2 LINK)
+- Test the `source` in Functions Playground: https://functions.chain.link/playground
 
-7. Registrar Automation upkeep (https://automation.chain.link/) apontando para o contrato `SettlementEngine` e financiar com LINK testnet.
+7. Register Automation upkeep (https://automation.chain.link/) pointing to the `SettlementEngine` contract and fund with testnet LINK.
 
-## Chainlink Functions — notas rápidas
+## Chainlink Functions — Quick Notes
 
-- Use Open‑Meteo para consultas históricas de precipitação (gratuito, sem API key)
-- Limites de execução: timeout ~10s, callback gas ≤ 300k
-- Teste o JS source no Playground antes de chamar on‑chain
+- Use Open-Meteo for historical precipitation queries (free, no API key)
+- Execution limits: timeout ~10s, callback gas ≤ 300k
+- Test the JS source in Playground before calling on-chain
 
-Exemplo de fluxo:
+Example flow:
 
-1. `SettlementEngine.performUpkeep()` chama `_sendRequest()` do `ClimateOracle`.
-2. Chainlink DON roda o JS (Functions) que consulta Open‑Meteo e retorna precipitação acumulada.
-3. `fulfillRequest()` grava resultado e `SettlementEngine` processa payouts se limiar atingido.
+1. `SettlementEngine.performUpkeep()` calls `_sendRequest()` from `ClimateOracle`.
+2. Chainlink DON runs the JS (Functions) which queries Open-Meteo and returns accumulated precipitation.
+3. `fulfillRequest()` records result and `SettlementEngine` processes payouts if threshold is met.
 
-## Testes e validação
+## Tests and Validation
 
-- Escrever testes unitários com mocks de resposta Functions.
-- Testes de integração usando fork Sepolia para simular respostas reais.
+- Write unit tests with Functions response mocks.
+- Integration tests using Sepolia fork to simulate real responses.
 
-## Roadmap pós-hackathon
+## Post-hackathon Roadmap
 
-- Suporte para múltiplas métricas (temperatura, vento)
-- Pools dinâmicos e pricing on‑chain
-- Integração CCIP para cross‑chain
-- DAO de governança
+- Support for multiple metrics (temperature, wind)
+- Dynamic pools and on-chain pricing
+- CCIP integration for cross-chain
+- Governance DAO
 
-## Como contribuir
+## How to Contribute
 
-1. Abra uma issue descrevendo o feature/bug
-2. Fork → branch com PR
-3. Adicione testes para qualquer mudança de lógica
+1. Open an issue describing the feature/bug
+2. Fork → branch with PR
+3. Add tests for any logic changes
 
-## 📚 Links Úteis
+## 📚 Useful Links
 
-### 🚀 Para Começar Rapidamente
-- **[Documentação Completa](./docs/README.md)** - Hub central de toda documentação
-- **[Como Testar](./docs/phase3-testes-validacao/HOW_TO_TEST.md)** - Guia prático de testes
-- **[Relatório de Testes](./docs/phase3-testes-validacao/TEST_REPORT.md)** - 66/66 testes ✅
-- **[Correções Aplicadas](./docs/phase3-testes-validacao/CORRECTIONS_APPLIED.md)** - Últimas atualizações
+### 🚀 To Get Started Quickly
+- **[Complete Documentation](./docs/README.md)** - Central hub for all documentation
+- **[How to Test](./docs/phase3-testes-validacao/HOW_TO_TEST.md)** - Practical testing guide
+- **[Test Report](./docs/phase3-testes-validacao/TEST_REPORT.md)** - 66/66 tests ✅
+- **[Applied Corrections](./docs/phase3-testes-validacao/CORRECTIONS_APPLIED.md)** - Latest updates
 
-### 📋 Documentação por Fase
-- **[Phase 1: Planejamento](./docs/phase1-planejamento/)** - Arquitetura e design do sistema
-- **[Phase 2: Implementação](./docs/phase2-implementacao/)** - Desenvolvimento dos contratos
-- **[Phase 3: Testes](./docs/phase3-testes-validacao/)** - Validação completa do protocolo
+### 📋 Documentation by Phase
+- **[Phase 1: Planning](./docs/phase1-planejamento/)** - System architecture and design
+- **[Phase 2: Implementation](./docs/phase2-implementacao/)** - Contract development
+- **[Phase 3: Testing](./docs/phase3-testes-validacao/)** - Complete protocol validation
 
-### 🔗 Recursos Externos
+### 🔗 External Resources
 - **Chainlink Functions:** https://docs.chain.link/chainlink-functions/getting-started
 - **Chainlink Automation:** https://docs.chain.link/chainlink-automation/overview/getting-started
 - **Open-Meteo API:** https://open-meteo.com/
@@ -189,6 +287,6 @@ Exemplo de fluxo:
 
 ---
 
-**Licença:** MIT  
+**License:** MIT  
 **Hackathon:** Chainlink Convergence 2026  
-**Status:** ✅ MVP Completo - Pronto para Testnet
+**Status:** ✅ Complete MVP - Ready for Testnet

@@ -38,8 +38,8 @@
 
 ### Scripts e Utilitários
 - [x] Deploy.s.sol (deploy automatizado Foundry)
-- [x] run-tests.ps1 (testes e coverage Windows)
-- [x] setup.ps1 (instalação automática Windows)
+- [x] run-all-tests.ps1 (testes e coverage Windows)
+- [x] install-foundry.ps1 (instalação automática Windows)
 - [x] functions/climate-data.js (código Chainlink Functions)
 - [x] .env.example (template de configuração)
 - [x] .gitignore (configuração Git)
@@ -56,7 +56,7 @@ forge build
 ### 2. Executar Testes
 ```powershell
 # Da raiz do projeto
-.\run-tests.ps1
+.\run-all-tests.ps1
 
 # Ou manual
 cd contracts
@@ -121,7 +121,7 @@ forge snapshot
 ## 📝 Próximos Passos (Fase 2)
 
 1. **Validar Contratos Localmente**
-   - Executar `.\run-tests.ps1`
+   - Executar `.\run-all-tests.ps1`
    - Verificar que todos os testes passam
    - Analisar coverage report
 
@@ -169,6 +169,6 @@ O protocolo está pronto para:
 
 ---
 
-Execute `.\run-tests.ps1` para validar todo o trabalho da Fase 1.
+Execute `.\run-all-tests.ps1` para validar todo o trabalho da Fase 1.
 
 Data: 14/02/2026

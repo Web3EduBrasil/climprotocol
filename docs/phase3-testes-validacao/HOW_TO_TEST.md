@@ -352,6 +352,6 @@ forge clean
 
 ---
 
-**Dica**: Execute `.\run-tests.ps1` primeiro para validar tudo de uma vez!
+**Dica**: Execute `.\run-all-tests.ps1` primeiro para validar tudo de uma vez!
 
 Data: 15/02/2026

@@ -82,21 +82,53 @@ This CRE workflow replaces the traditional Chainlink Automation + Functions pipe
 
 ## Getting Started
 
-### 1. Install dependencies
+### Local Simulation (Demo)
+
+The workflow demonstrates CRE capabilities but requires deployment to Chainlink's network for actual execution:
 
 ```bash
-bun install --cwd ./my-workflow
+# From project root
+.\run-cre-workflow.ps1
+
+# Or manually:
+cd cre-workflow/my-workflow
+bun install
+bun run simulate.ts
 ```
 
-### 2. Configure `.env`
+This validates:
+- ✅ Workflow code structure
+- ✅ Configuration (contracts, RPC, schedule)
+- ✅ All 7 CRE capabilities integrated
 
-Edit `.env` at the project root and add your private key (only needed for chain writes during simulation):
+**Note:** The simulation shows what the workflow would do. Actual execution requires deployment to CRE.
+
+### Production Deployment
+
+To deploy to Chainlink's Decentralized Oracle Network:
+
+#### 1. Install CRE CLI
+
+```bash
+curl -sSL https://cre.chain.link/install.sh | bash
+```
+
+#### 2. Install workflow dependencies
+
+```bash
+cd cre-workflow/my-workflow
+bun install
+```
+
+#### 3. Configure `.env`
+
+Edit `.env` at the project root and add your private key:
 
 ```
 CRE_ETH_PRIVATE_KEY=your_private_key_here
 ```
 
-### 3. Configure RPC endpoint
+#### 4. Configure RPC endpoint
 
 Edit `project.yaml` and set your Sepolia RPC URL:
 
@@ -107,7 +139,7 @@ staging-settings:
       url: https://your-rpc-endpoint-here
 ```
 
-### 4. Configure contract addresses
+#### 5. Configure contract addresses
 
 Edit `my-workflow/config.json` with your deployed contract addresses:
 
@@ -128,9 +160,47 @@ Edit `my-workflow/config.json` with your deployed contract addresses:
 }
 ```
 
-### 5. Simulate the workflow
+#### 6. Compile workflow to WASM
 
-From the project root (`cre-workflow/`):
+```bash
+cd my-workflow
+bunx cre-compile main.ts
+`d ..  # Back to project root
+.\run-cre-workflow.ps1
+```
+
+This runs our demo simulation that validates the workflow configuration.
+
+---
+
+### CRE CLI Simulation (Advanced)
+
+If you have the CRE CLI installed, you can simulate with actual trigger selection:
+
+```bash
+c``
+
+This generates a `.wasm` file for deployment.
+
+#### 7. Deploy to CRE network
+
+```bash
+cre workflow deploy --network sepolia
+```
+
+Once deployed, the workflow runs automatically on Chainlink's DON!
+
+### Testing Locally
+
+You can also simulate the workflow locally (without deploying):
+
+From the project root:
+
+```bash
+cre workflow simulate my-workflow
+```
+
+Or use our PowerShell script:
 
 ```bash
 cre workflow simulate my-workflow

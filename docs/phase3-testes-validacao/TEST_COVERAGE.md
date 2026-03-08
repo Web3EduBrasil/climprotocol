@@ -6,7 +6,7 @@ Este documento fornece instruções para executar e analisar o coverage de teste
 
 ```powershell
 # Windows PowerShell
-.\run-tests.ps1
+.\run-all-tests.ps1
 
 # Ou manual
 cd contracts

@@ -23,12 +23,12 @@ Implementar um MVP funcional que permita criar um evento climático (precipitaç
 - Arquivos utilitários e docs:
   - `README.md` atualizado com quickstart e instruções de Windows.
   - `ARCHITECTURE.md` com visão técnica e fluxo.
-  - `.env.example` e `setup.ps1` (script Windows).
+  - `.env.example` e scripts de instalação (install-foundry.ps1, install-bun.ps1).
   - `package.json` com scripts convenientes.
   - `functions/climate-data.js` para deploy no Functions playground.
 
 ## Como verificar localmente (passos principais)
-1. Instalar dependências (Foundry + Node.js). Para Windows use o `setup.ps1` ou siga instruções no `README.md`.
+1. Instalar dependências (Foundry + Node.js). Para Windows use o `install-foundry.ps1` ou siga instruções no `START_HERE.md`.
 
 2. Compilar contratos (dentro de `contracts`):
 
